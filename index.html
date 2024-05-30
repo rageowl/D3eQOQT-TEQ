@@ -13,6 +13,7 @@ var settingsData = { clipSpreadSheetURL:defaultClipSpreadSheetURL }
 	<script type="text/javascript" charset="utf-8">
 let videoClipList = []
 	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 	<style>
 		.tblWrap {
 			display:flex;
@@ -2099,14 +2100,32 @@ function readData()
 	let playListDataText = localStorage.getItem('watamePlayer_PlayList')
 	let individualVolumeDataText = localStorage.getItem('watamePlayer_Volumes')
 	if (playListDataText) {
-		playListData = JSON.parse(playListDataText)
+		try
+		{
+			playListData = JSON.parse(playListDataText)
+		}
+		catch (err)
+		{
+		}
 	}
 	if (individualVolumeDataText) {
-		individualVolumeData = JSON.parse(individualVolumeDataText)
+		try
+		{
+			individualVolumeData = JSON.parse(individualVolumeDataText)
+		}
+		catch (err)
+		{
+		}
 	}
 	let settingsDataText = localStorage.getItem('watamePlayer_settings')
 	if (settingsDataText) {
-		settingsData = JSON.parse(settingsDataText)
+		try
+		{
+			settingsData = JSON.parse(settingsDataText)
+		}
+		catch (err)
+		{
+		}
 		if (settingsData == null) {
 			settingsData = {}
 		}
@@ -3497,6 +3516,15 @@ function getSeconds(value, defaultVal) {
 	}
 	return defaultVal
 }
+function secondsToTime(seconds)
+{
+	seconds = parseInt(seconds)
+	let hours = parseInt(seconds / 3600)
+	seconds -= hours * 3600
+	let minutes = parseInt(seconds / 60)
+	seconds -= minutes * 60
+	return `${fillCharacter(hours, 2, '0')}:${fillCharacter(minutes, 2, '0')}:${fillCharacter(seconds, 2, '0')}`
+}
 let interval = null
 function common_pauseVideo(refresh = true) {
 	playButton.innerText = '\u25b6'
@@ -3715,6 +3743,7 @@ function playContext_playOrOpen_r(ctx, doPlay) {
 let ReservedStartTime = undefined;
 let LastVideoTime = 0
 let playCounter = 0
+let testPlayerEndTime = -1
 function playVideoData(data) {
 	if (!data) {
 		common_stopVideo()
@@ -3744,8 +3773,15 @@ function playVideoData(data) {
 	currentVideoClip = data
 	let beginTime = Date.now()
 	console.log('[' + beginTime + ']playVideoData: ' + currentVideoClip.key)
+	TestClipTime_Start.value = data.start
+	if (data.start.length == 0)
+	{
+		TestClipTime_Start.placeholder = "00:00:00"
+	}
+	TestClipTime_End.value = data.end
 	let startTime = getSeconds(data.start, 0)
 	let endtime = getSeconds(data.end, -1)
+	testPlayerEndTime = -1
 	let playingKey = ++playCounter
 	
 	if (!data.restricted) {
@@ -3777,8 +3813,8 @@ function playVideoData(data) {
 	playListItemsTable.updateList()
 
 	interval = setInterval(function() {
+		curTime = Date.now()
 		if (popupWnd) {
-			let curTime = Date.now()
 			if (endtime >= 0) {
 				let restMilliseconds = (beginTime + (endtime - startTime + 10) * 1000) - curTime
 				if (restMilliseconds <= 0 && !popupWnd.closed && playingKey == playCounter) {
@@ -3800,41 +3836,50 @@ function playVideoData(data) {
 			if (state == YT.PlayerState.PLAYING || state == YT.PlayerState.PAUSED)
 			{
 				if (!videoControl.isChanging) {
-					let currenTime = player.getCurrentTime()
-					videoControl.value = currenTime
+					let currentTime = player.getCurrentTime()
+					videoControl.value = currentTime
 					if (ReservedStartTime != undefined)
 					{
-						let diff = Math.abs(currenTime - ReservedStartTime);
+						let diff = Math.abs(currentTime - ReservedStartTime);
 						if (diff > 1)
 						{
 							player.seekTo(ReservedStartTime, true);
 						}
 						else
 						{
-							//console.log('OnInterval.setVolume' + ';currenTime:' + currenTime)
+							//console.log('OnInterval.setVolume' + ';currentTime:' + currentTime)
 							player.setVolume(ReservedVolume)
 							ReservedStartTime = undefined
-							LastVideoTime = currenTime
+							LastVideoTime = currentTime
 						}
 					}
 					else
 					{
-						let diff = Math.abs(LastVideoTime - currenTime)
+						let diff = Math.abs(LastVideoTime - currentTime)
 						if (diff > 1.5 && (curTime - beginTime) <= 10000)
 						{
 							console.log('OnInterval.ForcedRefresh: ' + currentVideoClip.key)
 							player.seekTo(LastVideoTime, true);
 						}
-						else if (endtime < currenTime)
+						else if (testPlayerEndTime >= 0 && testPlayerEndTime < currentTime)
 						{
-							//console.log('OnInterval.FinishVideo' + ';currenTime:' + currenTime + ';endtime:' + endtime)
+							player.pauseVideo()
+							testPlayerEndTime = -1
+						}
+						else if (endtime < currentTime)
+						{
+							//console.log('OnInterval.FinishVideo' + ';currentTime:' + currentTime + ';endtime:' + endtime)
 							console.log('OnInterval.FinishVideo: ' + currentVideoClip.key)
 							onFinishVideo(false)
 						}
 						else
 						{
-							LastVideoTime = currenTime;
+							LastVideoTime = currentTime;
 						}
+					}
+					if (TestClipTime_End.value.length == 0)
+					{
+						TestClipTime_End.placeholder = secondsToTime(currentTime)
 					}
 				}
 				if (!volumeControl.isChanging) {
@@ -4122,6 +4167,7 @@ function updateDivVisible() {
 	divPlaylistPanel.style.display = showPlaylist.checked ? 'flex' : 'none'
 	divPlaylistItemsPanel.style.display = showPlaylistItems.checked ? 'flex' : 'none'
 	divClipSpreadSheet.style.display = showClipTableURL.checked ? 'flex' : 'none'
+	divTestClipTime.style.display = showTestClipTime.checked ? 'flex' : 'none'
 	//playListItemsTable.adjustScroll()
 }
 function playList_getJson() {
@@ -5100,20 +5146,19 @@ function exportList() {
 	exportData["playListData"] = playList_getJson()
 	exportData["individualVolumeData"] = volume_getJson()
 	exportData["settings"] = settings_getJson()
-	exportimportDialogEdit.value = JSON.stringify(exportData)
-	//const DataStr = JSON.stringify(exportData)
-	//const encoder = new TextEncoder();
-	//const DataBinary = encoder.encode(DataStr);
-	//const DataBinaryStr = ArrayToString(DataBinary);
-	//const exportStr = base64UrlEncode(DataBinaryStr);
-	// const RevexportStr = base64UrlDecode(exportStr);
-	// const ReverseDataBinary = StringToArray(RevexportStr);
-	// const decoder = new TextDecoder();
-	// const ReverseDataStr = decoder.decode(ReverseDataBinary);
-	
-	//const url = window.location.origin + window.location.pathname + '?a=' + exportStr;
-	//window.history.pushState({}, null, '?a=' + exportStr)
-	//exportimportDialogEdit.value = url
+	let text = JSON.stringify(exportData)
+
+	const zip = new JSZip();
+	zip.file("sample.txt", text, { compression: "DEFLATE", compressionOptions: { level: 9 } });
+
+	zip.generateAsync({ type: "base64" })
+		.then(function (base64) {
+			exportimportDialogEdit.value = JSON.stringify({ version: 1, data : base64 })
+		})
+		.catch(function (err) {
+			console.error("Error generating zip file:", err);
+		});
+
 	exportimportDialog.onclose = function() {
 		if (exportimportDialog.returnValue == 'ok') {
 		}
@@ -5123,6 +5168,16 @@ function exportList() {
 	} else {
 		alert("The <dialog> API is not supported by this browser");
 	}
+}
+function base64ToArrayBuffer(base64)
+{
+	const binaryString = atob(base64);
+	const len = binaryString.length;
+	const bytes = new Uint8Array(len);
+	for (let i = 0; i < len; i++) {
+		bytes[i] = binaryString.charCodeAt(i);
+	}
+	return bytes.buffer;
 }
 function importList() {
 	exportimportDialogEdit.value = ''
@@ -5141,11 +5196,41 @@ function importList() {
 				importData = JSON.parse(Text)
 			} catch(err) {
 			}
-			localStorage.setItem("watamePlayer_PlayList", JSON.stringify(importData["playListData"]))
-			localStorage.setItem("watamePlayer_Volumes", JSON.stringify(importData["individualVolumeData"]))
-			localStorage.setItem("watamePlayer_settings", JSON.stringify(importData["settings"]))
+			
+			if (importData["version"] == 1)
+			{
+				let data = importData["data"];
+				const arrayBuffer = base64ToArrayBuffer(data);
+				const zip = new JSZip();
 
-			readData();
+				zip.loadAsync(arrayBuffer)
+					.then(function (zip) {
+						return zip.file("sample.txt").async("text");
+					})
+					.then(function (text) {
+						try {
+							importData = JSON.parse(text)
+						} catch(err) {
+						}
+						localStorage.setItem("watamePlayer_PlayList", JSON.stringify(importData["playListData"]))
+						localStorage.setItem("watamePlayer_Volumes", JSON.stringify(importData["individualVolumeData"]))
+						localStorage.setItem("watamePlayer_settings", JSON.stringify(importData["settings"]))
+
+						readData();
+					})
+					.catch(function (err) {
+						console.error("Error decompressing zip file:", err);
+					});
+			}
+			else
+			{
+				localStorage.setItem("watamePlayer_PlayList", JSON.stringify(importData["playListData"]))
+				localStorage.setItem("watamePlayer_Volumes", JSON.stringify(importData["individualVolumeData"]))
+				localStorage.setItem("watamePlayer_settings", JSON.stringify(importData["settings"]))
+
+				readData();
+			}
+
 		}
 	}
 	if (typeof exportimportDialog.showModal === "function") {
@@ -5153,6 +5238,49 @@ function importList() {
 	} else {
 		alert("The <dialog> API is not supported by this browser");
 	}
+}
+function TestClipTime_Start_onClick()
+{
+	let startTime = TestClipTime_Start.value
+	if (startTime.length == 0)
+	{
+		startTime = "00:00:00"
+	}
+	startTime = getSeconds(startTime);
+	videoControl_oninput(startTime);
+	videoControl_onchange(startTime);
+	let state = player_getPlayerState()
+	if (state == YT.PlayerState.PAUSED) {
+		player.playVideo()
+	}
+}
+function TestClipTime_End_onClick()
+{
+	let endTime = TestClipTime_End.value;
+	if (endTime.length == 0)
+	{
+		let currenTime = player.getCurrentTime();
+		endTime = secondsToTime(currenTime);
+		TestClipTime_End.value = endTime;
+	}
+	endTime = getSeconds(endTime);
+	let restartTime = endTime - 5;
+	videoControl_oninput(restartTime);
+	videoControl_onchange(restartTime);
+	testPlayerEndTime = endTime;
+	let state = player_getPlayerState()
+	if (state == YT.PlayerState.PAUSED) {
+		player.playVideo()
+	}
+}
+function TestClipTime_End_onFocus(input)
+{
+	let state = player_getPlayerState()
+    if (input.value === '' && (state == YT.PlayerState.PLAYING || state == YT.PlayerState.PAUSED))
+	{
+        input.value = input.placeholder;
+        input.select();
+    }
 }
 		</script>
 	</head>
@@ -5165,6 +5293,7 @@ function importList() {
 				<label for="showPlaylist" style="cursor:pointer"><input id="showPlaylist" type="checkbox" onClick="updateDivVisible()" style="cursor:pointer">PlayList</label>
 				<label for="showPlaylistItems" style="cursor:pointer"><input id="showPlaylistItems" type="checkbox" onClick="updateDivVisible()" style="cursor:pointer">PlayListItems</label>
 				<label for="showClipTableURL" style="cursor:pointer"><input id="showClipTableURL" type="checkbox" onClick="updateDivVisible()" style="cursor:pointer">ClipSpreadSheets</label>
+				<label for="showTestClipTime" style="cursor:pointer"><input id="showTestClipTime" type="checkbox" onClick="updateDivVisible()" style="cursor:pointer">TestClipTime</label>
 				[Manual Video <a href="https://www.youtube.com/watch?v=f6Nvl9tysug" target="_blank">KR</a> / <a href="https://www.youtube.com/watch?v=hi8T21HbMHA" target="_blank">JP</a>]
 			</div>
 			<div id="divClipSpreadSheet" style="flex:none;display:flex;flex-direction: column;">
@@ -5298,6 +5427,16 @@ function importList() {
 						<label id="currentOrder"></label>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div id="divTestClipTime" style="display: flex; justify-content: flex-start; gap: 10px;">
+			<div class="set" style="display: flex; flex-direction: column; align-items: center;">
+				<input id="TestClipTime_Start" type="text" placeholder="Start Time" style="margin: 5px 0;">
+				<button style="margin: 5px 0;" onClick="TestClipTime_Start_onClick()">Test</button>
+			</div>
+			<div class="set" style="display: flex; flex-direction: column; align-items: center;">
+				<input id="TestClipTime_End" type="text" placeholder="End Time" style="margin: 5px 0;", onFocus="TestClipTime_End_onFocus(this)">
+				<button style="margin: 5px 0;" onClick="TestClipTime_End_onClick()">Test</button>
 			</div>
 		</div>
 		<script src="https://www.youtube.com/iframe_api"></script>
