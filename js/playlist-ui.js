@@ -478,6 +478,12 @@ function refreshControlPanel() {
 			return function(e) {
 				e.preventDefault()
 				playContext_copyFromPlay()
+				if (!playState.activePanel && playState.viewContextStack.length > 0) {
+					const savedStack = playState.viewContextStack
+					const panel = panel_create(savedStack[0].data)
+					panel.viewContextStack = savedStack
+					panel_activate(panel)
+				}
 				if (playState.viewContextStack.length >= idx) {
 					playState.viewContextStack.splice(idx, playState.viewContextStack.length)
 					const ctx = playState.viewContextStack[playState.viewContextStack.length - 1]
