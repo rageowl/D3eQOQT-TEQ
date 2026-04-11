@@ -3,14 +3,18 @@
 		common_pauseVideo()
 		return
 	}
-	const currentPlayingItem = playState.currentViewContext.currentPlayingItem
-	const playOrder = playState.currentViewContext.playOrder
 	let state = player_getPlayerState()
 	if (state == YT.PlayerState.PLAYING || state == YT.PlayerState.BUFFERING) {
 		player.pauseVideo()
+		return
 	} else if (state == YT.PlayerState.PAUSED) {
 		player.playVideo()
-	} else if (currentPlayingItem != undefined) {
+		return
+	}
+	if (!playState.currentViewContext) return
+	const currentPlayingItem = playState.currentViewContext.currentPlayingItem
+	const playOrder = playState.currentViewContext.playOrder
+	if (currentPlayingItem != undefined) {
 		playListItemsTable_play(currentPlayingItem.key)
 	} else if (playListItemsTable.selectedDataKey != undefined) {
 		playListItemsTable_play(playListItemsTable.selectedDataKey)
@@ -463,12 +467,14 @@ function playListTable_moveDown() {
 	setDataChanged()
 }
 function playList_saveCheckboxes() {
+	if (!playState.currentViewContext) return
 	const playList = playState.currentViewContext.data
 	playList.shuffle = playList_checkBoxShuffle.checked
 	playList.entirePlay = playList_checkBoxPlayEntireList.checked
 	setDataChanged()
 }
 function playList_updateCheckboxes() {
+	if (!playState.currentViewContext) return
 	const playList = playState.currentViewContext.data
 	playList_checkBoxShuffle.checked = playList.shuffle
 	playList_checkBoxPlayEntireList.checked = playList.entirePlay
