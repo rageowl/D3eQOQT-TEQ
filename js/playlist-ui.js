@@ -81,41 +81,60 @@ function panel_initTableHandlers(panel, table) {
 			if (keys.length == 0) {
 				return
 			}
-			playListItemsTable.beginUpdate()
+			table.beginUpdate()
 			for (let i = 0; i < keys.length; ++i) {
 				let data = videoClipTable.getDataByKey(keys[i])
 				let item = playList_insertItem(playList, data, dataKey, front)
 				dataKey = item.key
 				front = false
 			}
-			playListItemsTable.endUpdate()
+			table.refreshDataIndexMap()
+			table.endUpdate()
 			playListTable.updateList()
 			videoClipTable.updateList()
 			setDataChanged()
 		} else if (data = e.dataTransfer.getData("wnfplayitem")) {
 			let keys = JSON.parse(data)
-			removeItemOnce(keys, dataKey)
-			if (keys.length == 0) {
-				return
+			if (table === playListItemsTable) {
+				// 같은 패널 내 재정렬
+				removeItemOnce(keys, dataKey)
+				if (keys.length == 0) return
+				table.beginUpdate()
+				let deletedDataList = table.deleteDataByKeys(keys)
+				table.insertDataList(deletedDataList, dataKey, front)
+				table.endUpdate()
+			} else {
+				// 다른 패널로 복사
+				if (!playListItemsTable || keys.length == 0) return
+				table.beginUpdate()
+				for (let i = 0; i < keys.length; ++i) {
+					const srcItem = playListItemsTable.getDataByKey(keys[i])
+					if (srcItem) {
+						const newItem = playList_insertItem(playList, srcItem.data, dataKey, front)
+						dataKey = newItem.key
+						front = false
+					}
+				}
+				table.refreshDataIndexMap()
+				table.endUpdate()
+				playListTable.updateList()
+				videoClipTable.updateList()
 			}
-			playListItemsTable.beginUpdate()
-			let deletedDataList = playListItemsTable.deleteDataByKeys(keys)
-			playListItemsTable.insertDataList(deletedDataList, dataKey, front)
-			playListItemsTable.endUpdate()
 			setDataChanged()
 		} else if (data = e.dataTransfer.getData("wnfplaylist")) {
 			let keys = JSON.parse(data)
 			if (keys.length == 0) {
 				return
 			}
-			playListItemsTable.beginUpdate()
+			table.beginUpdate()
 			for (let i = 0; i < keys.length; ++i) {
 				let data = playListTable.getDataByKey(keys[i])
 				let item = playList_insertItem(playList, data, dataKey, front)
 				dataKey = item.key
 				front = false
 			}
-			playListItemsTable.endUpdate()
+			table.refreshDataIndexMap()
+			table.endUpdate()
 			playListTable.updateList()
 			videoClipTable.updateList()
 			setDataChanged()

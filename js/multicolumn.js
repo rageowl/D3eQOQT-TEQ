@@ -55,6 +55,7 @@ class MultiColumnList {
 				obj.ondrop(ev, null, false)
 			}
 			obj._rowDropped = false
+			ev.stopPropagation()
 		}
 		userTbl.ondragover = function(ev) {
 			if (obj._divEnterCount == 1 && obj._rowEnterCount == 0) {

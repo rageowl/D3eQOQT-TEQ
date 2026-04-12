@@ -52,8 +52,10 @@ function playList_insertItem(playList, data, atDataKey=null, front=false) {
 	} else {
 		let ctx = playContext_get(playList)
 		if (atDataKey != null) {
-			const idx = playList.items.indexOf(atDataKey)
-			if (idx == -1 || front) {
+			const idx = playList.items.findIndex(i => i.key === atDataKey)
+			if (idx == -1) {
+				playList.items.push(item)
+			} else if (front) {
 				playList.items.splice(idx, 0, item)
 			} else {
 				playList.items.splice(idx + 1, 0, item)
