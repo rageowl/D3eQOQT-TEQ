@@ -241,9 +241,11 @@ let playListHeaders = [
 		let itemSearchContaining = totalListContextMenu.addItem()
 		itemSearchContaining.setElements('Search for Playlists Containing Item')
 		itemSearchContaining.onclick = function() {
+			const _data = videoClipTable.getDataByKey(videoClipTable.selectedDataKey)
+			if (!_data) return
 			showPlaylist.checked = true
 			updateDivVisible()
-			playListTable_SearchContaining(videoClipTable.getDataByKey(videoClipTable.selectedDataKey).key)
+			playListTable_SearchContaining(_data.key)
 		}
 
 		let itemCopyToClipboard = totalListContextMenu.addItem()
@@ -367,23 +369,27 @@ let playListHeaders = [
 		let itemSearch = playListItemsContextMenu.addItem()
 		itemSearch.setElements('Search Playlists')
 		itemSearch.onclick = function() {
-			let data = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey).data
+			const _item = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey)
+			if (!_item) return
 			showPlaylist.checked = true
 			updateDivVisible()
-			playListTable_SearchByKey(data.key)
+			playListTable_SearchByKey(_item.data.key)
 		}
 		let itemSearchContaining = playListItemsContextMenu.addItem()
 		itemSearchContaining.setElements('Search for Playlists Containing Item')
 		itemSearchContaining.onclick = function() {
-			let data = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey).data
+			const _item = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey)
+			if (!_item) return
 			showPlaylist.checked = true
 			updateDivVisible()
-			playListTable_SearchContaining(data.key)
+			playListTable_SearchContaining(_item.data.key)
 		}
 		let itemSelect = playListItemsContextMenu.addItem()
 		itemSelect.setElements('Select')
 		itemSelect.onclick = function() {
-			let data = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey).data
+			const _item = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey)
+			if (!_item) return
+			let data = _item.data
 			if (data.type == 1)
 			{
 				showTotallist.checked = true

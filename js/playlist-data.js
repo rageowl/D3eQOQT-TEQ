@@ -37,12 +37,12 @@ function playList_newItem(playList, data, shufflePriority) {
 function playList_insertItem(playList, data, atDataKey=null, front=false) {
 	let newKey = nextPlayItemSN++
 	if (playList == null) {
-		playList = playState.currentViewContext.data
+		playList = playState.currentViewContext ? playState.currentViewContext.data : null
 	}
 	let item = { key:newKey, playList:playList, data:data, shufflePriority:0 }
 	++data.refCount
 
-	if (playState.currentViewContext.data == playList) {
+	if (playState.currentViewContext && playState.currentViewContext.data == playList) {
 		let ctx = playState.currentViewContext
 		const playOrder = ctx.playOrder
 		const playOrderMap = ctx.playOrderMap
@@ -71,7 +71,7 @@ function playList_insertItem(playList, data, atDataKey=null, front=false) {
 }
 function playList_insertItems(playList, mayDataList, atDataKey=null, front=false) {
 	let ctx = playState.currentViewContext
-	let currentPlayList = playState.currentViewContext.data
+	let currentPlayList = ctx ? ctx.data : null
 	if (playList == null) {
 		playList = currentPlayList
 	}

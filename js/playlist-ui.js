@@ -613,6 +613,7 @@ function playListItemsTable_deleteAll() {
 	if (playState.playContextStack.length != 0) {
 		common_stopVideo(false)
 	}
+	if (!playState.currentViewContext) return
 	playState.currentViewContext.playOrder = []
 	playState.currentViewContext.playOrderMap.clear()
 	playList_itemsDeleted(playState.currentViewContext.data.items)
