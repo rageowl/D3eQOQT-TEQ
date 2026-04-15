@@ -109,7 +109,8 @@ let playListHeaders = [
 	playListTable.headerDivClassName = 'userTblHead'
 	playListTable.bodyDivClassName = 'userTbl'
 	playListTable.ondblclick = function(e) {
-		playState.previewPlayList = this.getDataByKey(this.selectedDataKey)
+		// 더블클릭한 재생목록을 선택한 재생목록으로 설정하고 트랙 목록 열기
+		playState.selectedPlayList = this.getDataByKey(this.selectedDataKey)
 		playList_open(this.getDataByKey(this.selectedDataKey))
 	}
 	
@@ -263,8 +264,9 @@ let playListHeaders = [
 		let itemSelect = playListContextMenu.addItem()
 		itemSelect.setElements('Select')
 		itemSelect.onclick = function() {
+			// 컨텍스트 메뉴 Select: 선택한 재생목록으로 설정하고 트랙 목록 열기
 			const data = playListTable.getDataByKey(playListTable.selectedDataKey)
-			playState.previewPlayList = data
+			playState.selectedPlayList = data
 			playList_open(data)
 		}
 		let itemOpenInNewPanel = playListContextMenu.addItem()

@@ -50,7 +50,7 @@ const playState = {
 	ReservedVolume: undefined,
 	LastVideoTime: 0,
 	LastExecFinishVideoTime: 0,
-	previewPlayList: null,
+	selectedPlayList: null,  // 재생 경로에 표시 중인 선택한 재생목록
 }
 
 // ── DOM 헬퍼 ─────────────────────────────────────────────────────────────────

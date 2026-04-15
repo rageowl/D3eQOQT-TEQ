@@ -515,8 +515,9 @@ function refreshControlPanel() {
 		})(i + 1)
 		divPlayPath.appendChild(anchor)
 	}
-	if (playState.previewPlayList) {
-		const alreadyInStack = playState.playContextStack.some(ctx => ctx.data === playState.previewPlayList)
+	// 선택한 재생목록: 재생 경로 끝에 반투명 링크로 표시 (클릭 시 트랙 목록 열기)
+	if (playState.selectedPlayList) {
+		const alreadyInStack = playState.playContextStack.some(ctx => ctx.data === playState.selectedPlayList)
 		if (!alreadyInStack) {
 			if (playState.playContextStack.length > 0) {
 				const sep = document.createElement('label')
@@ -524,7 +525,7 @@ function refreshControlPanel() {
 				divPlayPath.appendChild(sep)
 			}
 			const anchor = document.createElement('a')
-			anchor.innerHTML = `[${playState.previewPlayList.trackName} / ${playState.previewPlayList.originalArtist}]`
+			anchor.innerHTML = `[${playState.selectedPlayList.trackName} / ${playState.selectedPlayList.originalArtist}]`
 			anchor.href = '#'
 			anchor.style.opacity = '0.5'
 			anchor.style.fontStyle = 'italic'
@@ -533,7 +534,7 @@ function refreshControlPanel() {
 					e.preventDefault()
 					playList_open(pl)
 				}
-			})(playState.previewPlayList)
+			})(playState.selectedPlayList)
 			divPlayPath.appendChild(anchor)
 		}
 	}

@@ -114,7 +114,8 @@ function readData_Finalize()
 		}
 	}
 	if (playListItems.length) {
-		playState.previewPlayList = playListItems[0]
+		// 초기 로드 시 첫 번째 재생목록을 선택한 재생목록으로 설정
+		playState.selectedPlayList = playListItems[0]
 		playList_open(playListItems[0])
 	}
 	playListTable.setData(playListItems)
