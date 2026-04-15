@@ -110,8 +110,9 @@ let playListHeaders = [
 	playListTable.bodyDivClassName = 'userTbl'
 	playListTable.ondblclick = function(e) {
 		// 더블클릭한 재생목록을 선택한 재생목록으로 설정하고 트랙 목록 열기
-		playState.selectedPlayList = this.getDataByKey(this.selectedDataKey)
-		playList_open(this.getDataByKey(this.selectedDataKey))
+		const data = this.getDataByKey(this.selectedDataKey)
+		playState.selectedPlayList = data
+		playList_open(data)
 	}
 	
 	playListTable.onkeydown = function(e) {
