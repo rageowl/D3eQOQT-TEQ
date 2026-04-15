@@ -83,7 +83,7 @@ function refreshPlayButton() {
 		}
 	}
 }
-function playListItems_play(playItem) {
+function trackList_play(playItem) {
 	const playList = playItem.playList
 	const ctx = playContext_get(playList)
 	const data = playList.data
@@ -94,25 +94,25 @@ function playListItems_play(playItem) {
 		common_stopVideo()
 	}
 }
-function playListItemsTable_play(dataKey) {
-	let dataIndex = playListItemsTable.getDataIndexByKey(dataKey)
+function trackListTable_play(dataKey) {
+	let dataIndex = trackListTable.getDataIndexByKey(dataKey)
 	//console.log(dataKey, dataIndex)
 	if (dataIndex == -1) {
 		common_stopVideo()
 		return
 	}
 
-	const playItem = playListItemsTable.getData(dataIndex)
-	playListItems_play(playItem)
+	const playItem = trackListTable.getData(dataIndex)
+	trackList_play(playItem)
 }
-function playListItemsTable_playOrOpen(dataKey, doPlay) {
-	let dataIndex = playListItemsTable.getDataIndexByKey(dataKey)
+function trackListTable_playOrOpen(dataKey, doPlay) {
+	let dataIndex = trackListTable.getDataIndexByKey(dataKey)
 	//console.log(dataKey, dataIndex)
 	if (dataIndex == -1) {
 		return
 	}
 
-	const playItem = playListItemsTable.getData(dataIndex)
+	const playItem = trackListTable.getData(dataIndex)
 	const playList = playItem.playList
 	const ctx = playContext_get(playList)
 	const data = playList.data
@@ -194,7 +194,7 @@ function playVideoData(data) {
 	}
 	refreshControlPanel()
 	playListTable.updateList()
-	if (playListItemsTable) playListItemsTable.updateList()
+	if (trackListTable) trackListTable.updateList()
 
 	playState.interval = setInterval(function() {
 		curTime = Date.now()
@@ -357,6 +357,6 @@ function onFinishVideo(bForce) {
 	if (bForce || CurTime - playState.LastExecFinishVideoTime > 1000)
 	{
 		playState.LastExecFinishVideoTime = CurTime
-		playListItems_next(true)
+		trackList_next(true)
 	}
 }

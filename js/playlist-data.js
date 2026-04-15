@@ -48,7 +48,7 @@ function playList_insertItem(playList, data, atDataKey=null, front=false) {
 		const playOrderMap = ctx.playOrderMap
 		playOrderMap.set(item.key, playOrder.length)
 		playOrder.push(item)
-		playListItemsTable.insertData(item, atDataKey, front)
+		trackListTable.insertData(item, atDataKey, front)
 	} else {
 		let ctx = playContext_get(playList)
 		if (atDataKey != null) {
@@ -97,7 +97,7 @@ function playList_insertItems(playList, mayDataList, atDataKey=null, front=false
 			playOrderMap.set(item.key, playOrder.length)
 			playOrder.push(item)
 		}
-		playListItemsTable.insertDataList(items, atDataKey, front)
+		trackListTable.insertDataList(items, atDataKey, front)
 	} else {
 		if (atDataKey != null) {
 			const idx = playList.items.indexOf(atDataKey)
@@ -153,7 +153,7 @@ function playListTable_deleteAll(bSave = true) {
 		p.table.setData([])
 		p.viewContextStack.length = 0
 	}
-	if (playListItemsTable) playListItemsTable.setData([])
+	if (trackListTable) trackListTable.setData([])
 	playState.playContextMap.clear()
 	array_clear(playState.playContextStack)
 	array_clear(playState.viewContextStack)
@@ -166,33 +166,33 @@ function playListTable_deleteAll(bSave = true) {
 		setDataChanged()
 	}
 }
-function playList_addToPlayListItemsByKeys(keys) {
-	if (!playListItemsTable || !playState.currentViewContext) return
+function playList_addToTrackListByKeys(keys) {
+	if (!trackListTable || !playState.currentViewContext) return
 	let itemKeys = []
-	playListItemsTable.beginUpdate()
+	trackListTable.beginUpdate()
 	for (let i = 0; i < keys.length; ++i) {
 		let data = playListTable.getDataByKey(keys[i])
 		let item = playList_insertItem(null, data)
 		itemKeys.push(item.key)
 	}
-	playListItemsTable.endUpdate()
+	trackListTable.endUpdate()
 	playListTable.updateList()
-	playListItemsTable.clearSelection()
+	trackListTable.clearSelection()
 	for (let i = 0; i < itemKeys.length; ++i) {
-		playListItemsTable.setDataRowSelection(itemKeys[i], true)
+		trackListTable.setDataRowSelection(itemKeys[i], true)
 	}
 	setDataChanged()
 }
-function playList_addToPlayListItems() {
+function playList_addToTrackList() {
 	let dataOrder = playListTable.copyDataOrder()
-	playList_addToPlayListItemsByKeys(dataOrder)
+	playList_addToTrackListByKeys(dataOrder)
 }
-function playList_addSelectedToPlayListItems() {
+function playList_addSelectedToTrackList() {
 	let selectedDataKeys = playListTable.selectedDataKeys.slice()
 	if (selectedDataKeys.length == 0) {
 		return
 	}
-	playList_addToPlayListItemsByKeys(selectedDataKeys)
+	playList_addToTrackListByKeys(selectedDataKeys)
 }
 function setDataChanged() {
 	dataChanged = true

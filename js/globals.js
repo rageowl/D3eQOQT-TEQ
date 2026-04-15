@@ -25,8 +25,8 @@ let isLoading = false
 let spreadsheetsFormList = []
 let libraryContextMenu = null
 let playListContextMenu = null
-let playListItemsContextMenu = null
-let playListItemsTable = null
+let trackListContextMenu = null
+let trackListTable = null
 
 // ── 공유 재생 상태 (여러 파일이 읽고 씀) ─────────────────────────────────────
 const playState = {

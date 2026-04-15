@@ -119,7 +119,7 @@ let playListHeaders = [
 		if (e.keyCode == 46) {
 			playListTable_deleteSelected()
 		} else if (e.keyCode == 13) {
-		   playList_addSelectedToPlayListItems()
+		   playList_addSelectedToTrackList()
 		} else if (e.ctrlKey && e.keyCode == 67) {
 			copySelectedItemsToClipboard(playListTable)
 		}
@@ -140,12 +140,12 @@ let playListHeaders = [
 				return
 			}
 			const playList = playListTable.getDataByKey(dataKey)
-			playListItemsTable.beginUpdate()
+			trackListTable.beginUpdate()
 			for (let i = 0; i < keys.length; ++i) {
 				let data = videoClipTable.getDataByKey(keys[i])
 				let item = playList_insertItem(playList, data)
 			}
-			playListItemsTable.endUpdate()
+			trackListTable.endUpdate()
 			videoClipTable.updateList()
 			playListTable.updateList()
 			setDataChanged()
@@ -155,13 +155,13 @@ let playListHeaders = [
 				return
 			}
 			const playList = playListTable.getDataByKey(dataKey)
-			if (playListItemsTable && playState.currentViewContext && playList != playState.currentViewContext.data) {
-				playListItemsTable.beginUpdate()
+			if (trackListTable && playState.currentViewContext && playList != playState.currentViewContext.data) {
+				trackListTable.beginUpdate()
 				for (let i = 0; i < keys.length; ++i) {
-					let item = playListItemsTable.getDataByKey(keys[i])
+					let item = trackListTable.getDataByKey(keys[i])
 					playList_insertItem(playList, item.data)
 				}
-				playListItemsTable.endUpdate()
+				trackListTable.endUpdate()
 				videoClipTable.updateList()
 				playListTable.updateList()
 				setDataChanged()
@@ -180,7 +180,7 @@ let playListHeaders = [
 			playListTable.endUpdate()
 			setDataChanged()
 		}
-		playListItemsTable_updatePlayOrder()
+		trackListTable_updatePlayOrder()
 	}
 	playListTable.ondragover = function(e, dataKey) {
 		let types = e.dataTransfer.types
@@ -350,50 +350,50 @@ let playListHeaders = [
 		}
 	}
 	{
-		playListItemsContextMenu = new PopupMenu()
-		playListItemsContextMenu.className = 'contextMenuDiv'
-		playListItemsContextMenu.itemNormalClassName = 'contextMenuDivItemNormal'
-		playListItemsContextMenu.itemHoverClassName = 'contextMenuDivItemHover'
-		let itemPlay = playListItemsContextMenu.addItem()
+		trackListContextMenu = new PopupMenu()
+		trackListContextMenu.className = 'contextMenuDiv'
+		trackListContextMenu.itemNormalClassName = 'contextMenuDivItemNormal'
+		trackListContextMenu.itemHoverClassName = 'contextMenuDivItemHover'
+		let itemPlay = trackListContextMenu.addItem()
 		itemPlay.setElements('Play')
 		itemPlay.onclick = function() {
-			playListItemsTable_play(playListItemsTable.selectedDataKey)
+			trackListTable_play(trackListTable.selectedDataKey)
 		}
-		let itemOpen = playListItemsContextMenu.addItem()
+		let itemOpen = trackListContextMenu.addItem()
 		itemOpen.setElements('Open')
 		itemOpen.onclick = function() {
-			playListItemsTable_playOrOpen(playListItemsTable.selectedDataKey, false)
+			trackListTable_playOrOpen(trackListTable.selectedDataKey, false)
 		}
-		let itemOpenInNewPanel = playListItemsContextMenu.addItem()
+		let itemOpenInNewPanel = trackListContextMenu.addItem()
 		itemOpenInNewPanel.setElements('Open in New Panel')
 		itemOpenInNewPanel.onclick = function() {
-			const item = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey)
+			const item = trackListTable.getDataByKey(trackListTable.selectedDataKey)
 			if (item && item.data.type == 2) {
 				playList_openInNewPanel(item.data)
 			}
 		}
-		let itemSearch = playListItemsContextMenu.addItem()
+		let itemSearch = trackListContextMenu.addItem()
 		itemSearch.setElements('Search Playlists')
 		itemSearch.onclick = function() {
-			const _item = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey)
+			const _item = trackListTable.getDataByKey(trackListTable.selectedDataKey)
 			if (!_item) return
 			showPlaylist.checked = true
 			updateDivVisible()
 			playListTable_SearchByKey(_item.data.key)
 		}
-		let itemSearchContaining = playListItemsContextMenu.addItem()
+		let itemSearchContaining = trackListContextMenu.addItem()
 		itemSearchContaining.setElements('Search for Playlists Containing Item')
 		itemSearchContaining.onclick = function() {
-			const _item = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey)
+			const _item = trackListTable.getDataByKey(trackListTable.selectedDataKey)
 			if (!_item) return
 			showPlaylist.checked = true
 			updateDivVisible()
 			playListTable_SearchContaining(_item.data.key)
 		}
-		let itemSelect = playListItemsContextMenu.addItem()
+		let itemSelect = trackListContextMenu.addItem()
 		itemSelect.setElements('Select')
 		itemSelect.onclick = function() {
-			const _item = playListItemsTable.getDataByKey(playListItemsTable.selectedDataKey)
+			const _item = trackListTable.getDataByKey(trackListTable.selectedDataKey)
 			if (!_item) return
 			let data = _item.data
 			if (data.type == 1)
@@ -416,29 +416,29 @@ let playListHeaders = [
 				playListTable.selectedDataKey = data.key
 			}
 		}
-		let itemDelete = playListItemsContextMenu.addItem()
+		let itemDelete = trackListContextMenu.addItem()
 		itemDelete.setElements('Delete')
 		itemDelete.onclick = function() {
-			playListItemsTable_deleteSelected()
+			trackListTable_deleteSelected()
 		}
-		let itemMoveToFront = playListItemsContextMenu.addItem()
+		let itemMoveToFront = trackListContextMenu.addItem()
 		itemMoveToFront.setElements('Move to front')
 		itemMoveToFront.onclick = function() {
-			playListItemsTable_moveToFront()
+			trackListTable_moveToFront()
 		}
-		let itemMoveToBack = playListItemsContextMenu.addItem()
+		let itemMoveToBack = trackListContextMenu.addItem()
 		itemMoveToBack.setElements('Move to back')
 		itemMoveToBack.onclick = function() {
-			playListItemsTable_moveToBack()
+			trackListTable_moveToBack()
 		}
 	
-		let itemPlayOrderTask = playListItemsContextMenu.addItem()
+		let itemPlayOrderTask = trackListContextMenu.addItem()
 		itemPlayOrderTask.setElements(createSpan('PlayOrder Task', 'flex:1;'), createSpan('>', 'flex:none;'))
 		let menuPlayOrderTask = itemPlayOrderTask.setSubMenu()
 		let itemShuffleSelections = menuPlayOrderTask.addItem()
 		itemShuffleSelections.setElements('Shuffle Selection')
 		itemShuffleSelections.onclick = function() {
-			let selectedDataKeys = playListItemsTable.selectedDataKeys
+			let selectedDataKeys = trackListTable.selectedDataKeys
 			if (selectedDataKeys.length <= 1) {
 				return
 			}
@@ -476,17 +476,17 @@ let playListHeaders = [
 			}
 			for (let i = 0; i < selectedDataKeys.length; ++i) {
 				const key = selectedDataKeys[i]
-				playOrder[indexes[i]] = playListItemsTable.getDataByKey(key)
+				playOrder[indexes[i]] = trackListTable.getDataByKey(key)
 				playOrderMap.set(key, indexes[i])
 			}
 		
-			playListItemsTable.updateList()
+			trackListTable.updateList()
 			refreshControlPanel()
 		}
 		let itemReorderSelections = menuPlayOrderTask.addItem()
 		itemReorderSelections.setElements('Reorder Selection')
 		itemReorderSelections.onclick = function() {
-			let selectedDataKeys = playListItemsTable.selectedDataKeys
+			let selectedDataKeys = trackListTable.selectedDataKeys
 			if (selectedDataKeys.length <= 1) {
 				return
 			}
@@ -499,7 +499,7 @@ let playListHeaders = [
 				const key = selectedDataKeys[i]
 				let orderIdx = playOrderMap.get(key)
 				if (orderIdx != undefined) {
-					const rowIdx = playListItemsTable.getRowIndex(key)
+					const rowIdx = trackListTable.getRowIndex(key)
 					indexes.push(orderIdx)
 					items.push({ key:key, rowIdx:rowIdx })
 				}
@@ -511,18 +511,18 @@ let playListHeaders = [
 			indexes.sort((a,b)=>a-b)
 			for (let i = 0; i < items.length; ++i) {
 				const key = items[i].key
-				playOrder[indexes[i]] = playListItemsTable.getDataByKey(key)
+				playOrder[indexes[i]] = trackListTable.getDataByKey(key)
 				playOrderMap.set(key, indexes[i])
 			}
 		
-			playListItemsTable.updateList()
+			trackListTable.updateList()
 			refreshControlPanel()
 		}
 
 		let itemPlayOrderMoveToFront = menuPlayOrderTask.addItem()
 		itemPlayOrderMoveToFront.setElements('Move to front')
 		itemPlayOrderMoveToFront.onclick = function() {
-			let selectedDataKeys = playListItemsTable.selectedDataKeys
+			let selectedDataKeys = trackListTable.selectedDataKeys
 			if (selectedDataKeys.length <= 0) {
 				return
 			}
@@ -536,7 +536,7 @@ let playListHeaders = [
 				const key = selectedDataKeys[i]
 				let orderIdx = playOrderMap.get(key)
 				if (orderIdx != undefined) {
-					const rowIdx = playListItemsTable.getRowIndex(key)
+					const rowIdx = trackListTable.getRowIndex(key)
 					indexes.push(orderIdx)
 					items.push({ key:key, rowIdx:rowIdx })
 				}
@@ -551,19 +551,19 @@ let playListHeaders = [
 			for (let i = indexes.length - 1; i >= 0; --i) {
 				let idx = indexes[i]
 				playOrder.splice(idx, 1)
-				movedItems.push(playListItemsTable.getDataByKey(items[i].key))
+				movedItems.push(trackListTable.getDataByKey(items[i].key))
 			}
 
 			ctx.playOrder = movedItems.concat(playOrder)
 			playContext_refreshPlayerOrderMap(ctx)
 			
-			playListItemsTable.updateList()
+			trackListTable.updateList()
 			refreshControlPanel()
 		}
 		let itemPlayOrderMoveToBack = menuPlayOrderTask.addItem()
 		itemPlayOrderMoveToBack.setElements('Move to back')
 		itemPlayOrderMoveToBack.onclick = function() {
-			let selectedDataKeys = playListItemsTable.selectedDataKeys
+			let selectedDataKeys = trackListTable.selectedDataKeys
 			if (selectedDataKeys.length <= 0) {
 				return
 			}
@@ -577,7 +577,7 @@ let playListHeaders = [
 				const key = selectedDataKeys[i]
 				let orderIdx = playOrderMap.get(key)
 				if (orderIdx != undefined) {
-					const rowIdx = playListItemsTable.getRowIndex(key)
+					const rowIdx = trackListTable.getRowIndex(key)
 					indexes.push(orderIdx)
 					items.push({ key:key, rowIdx:rowIdx })
 				}
@@ -592,23 +592,23 @@ let playListHeaders = [
 			for (let i = indexes.length - 1; i >= 0; --i) {
 				let idx = indexes[i]
 				playOrder.splice(idx, 1)
-				movedItems.push(playListItemsTable.getDataByKey(items[i].key))
+				movedItems.push(trackListTable.getDataByKey(items[i].key))
 			}
 
 			ctx.playOrder = playOrder.concat(movedItems)
 			playContext_refreshPlayerOrderMap(ctx)
 			
-			playListItemsTable.updateList()
+			trackListTable.updateList()
 			refreshControlPanel()
 		}
 
-		let itemPlaylistTask = playListItemsContextMenu.addItem()
+		let itemPlaylistTask = trackListContextMenu.addItem()
 		itemPlaylistTask.setElements(createSpan('Playlist Task', 'flex:1;'), createSpan('>', 'flex:none;'))
 		let menuPlaylistTask = itemPlaylistTask.setSubMenu()
 		let itemCheckShuffle = menuPlaylistTask.addItem()
 		itemCheckShuffle.setElements('Set shuffle on')
 		itemCheckShuffle.onclick = function() {
-			playListItemsTable_ForeachSelection(function(item) {
+			trackListTable_ForeachSelection(function(item) {
 				if (item.data.type == 2) {
 					item.data.shuffle = true
 				}
@@ -618,7 +618,7 @@ let playListHeaders = [
 		let itemUncheckShuffle = menuPlaylistTask.addItem()
 		itemUncheckShuffle.setElements('Set shuffle off')
 		itemUncheckShuffle.onclick = function() {
-			playListItemsTable_ForeachSelection(function(item) {
+			trackListTable_ForeachSelection(function(item) {
 				if (item.data.type == 2) {
 					item.data.shuffle = false
 				}
@@ -628,7 +628,7 @@ let playListHeaders = [
 		let itemCheckPlayEntire = menuPlaylistTask.addItem()
 		itemCheckPlayEntire.setElements('Set playEntireItems on')
 		itemCheckPlayEntire.onclick = function() {
-			playListItemsTable_ForeachSelection(function(item) {
+			trackListTable_ForeachSelection(function(item) {
 				if (item.data.type == 2) {
 					item.data.entirePlay = true
 				}
@@ -638,7 +638,7 @@ let playListHeaders = [
 		let itemUncheckPlayEntire = menuPlaylistTask.addItem()
 		itemUncheckPlayEntire.setElements('Set playEntireItems off')
 		itemUncheckPlayEntire.onclick = function() {
-			playListItemsTable_ForeachSelection(function(item) {
+			trackListTable_ForeachSelection(function(item) {
 				if (item.data.type == 2) {
 					item.data.entirePlay = false
 				}
@@ -646,13 +646,13 @@ let playListHeaders = [
 			playList_updateCheckboxes()
 		}
 		
-		let itemCopyToClipboard = playListItemsContextMenu.addItem()
+		let itemCopyToClipboard = trackListContextMenu.addItem()
 		itemCopyToClipboard.setElements('CopyToClipboard')
 		itemCopyToClipboard.onclick = function() {
-			showCopyToClipboardDialog(playListItemsTable)
+			showCopyToClipboardDialog(trackListTable)
 		}
 		/*
-		let itemTest1 = playListItemsContextMenu.addItem()
+		let itemTest1 = trackListContextMenu.addItem()
 		itemTest1.setElements(createSpan('Test1 Task', 'flex:1;'), createSpan('>', 'flex:none;'))
 
 		let menuTest1Task = itemTest1.setSubMenu()

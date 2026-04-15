@@ -15,18 +15,18 @@
 	const currentPlayingItem = playState.currentViewContext.currentPlayingItem
 	const playOrder = playState.currentViewContext.playOrder
 	if (currentPlayingItem != undefined) {
-		playListItemsTable_play(currentPlayingItem.key)
-	} else if (playListItemsTable.selectedDataKey != undefined) {
-		playListItemsTable_play(playListItemsTable.selectedDataKey)
+		trackListTable_play(currentPlayingItem.key)
+	} else if (trackListTable.selectedDataKey != undefined) {
+		trackListTable_play(trackListTable.selectedDataKey)
 	} else if (playOrder.length > 0) {
-		playListItemsTable_play(playOrder[0].key)
+		trackListTable_play(playOrder[0].key)
 	}
 }
 function prevButton_onClick() {
-	playListItems_prev()
+	trackList_prev()
 }
 
-function playListItems_prev() {
+function trackList_prev() {
 	const state = player_getPlayerState()
 	if (state == YT.PlayerState.BUFFERING) {
 		return
@@ -72,7 +72,7 @@ function playListItems_prev() {
 		}
 	}
 }
-function playListItems_next(videoFinished) {
+function trackList_next(videoFinished) {
 	const state = player_getPlayerState()
 	if (state == YT.PlayerState.BUFFERING) {
 		return
@@ -132,50 +132,50 @@ function playListItems_next(videoFinished) {
 	}
 }
 function nextButton_onClick() {
-	playListItems_next(false)
+	trackList_next(false)
 }
-function playListItemsTable_updatePlayOrder() {
+function trackListTable_updatePlayOrder() {
 	const shufflePlayList = playState.currentViewContext ? playState.currentViewContext.shuffled : false
 	if (!shufflePlayList) {
 		playList_resetPlayOrder()
 	}
 }
-function playListItemsTable_moveToFront() {
-	playListItemsTable.moveSelectionToFront()
-	playListItemsTable.focus()
-	playListItemsTable_updatePlayOrder()
+function trackListTable_moveToFront() {
+	trackListTable.moveSelectionToFront()
+	trackListTable.focus()
+	trackListTable_updatePlayOrder()
 	setDataChanged()
 	}
-function playListItemsTable_moveToBack() {
-	playListItemsTable.moveSelectionToBack()
-	playListItemsTable.focus()
-	playListItemsTable_updatePlayOrder()
+function trackListTable_moveToBack() {
+	trackListTable.moveSelectionToBack()
+	trackListTable.focus()
+	trackListTable_updatePlayOrder()
 	setDataChanged()
 }
-function playListItemsTable_moveUp() {
-	playListItemsTable.moveSelectedItemUp()
-	playListItemsTable.focus()
-	playListItemsTable_updatePlayOrder()
+function trackListTable_moveUp() {
+	trackListTable.moveSelectedItemUp()
+	trackListTable.focus()
+	trackListTable_updatePlayOrder()
 	setDataChanged()
 	}
-function playListItemsTable_moveDown() {
-	playListItemsTable.moveSelectedItemDown()
-	playListItemsTable.focus()
-	playListItemsTable_updatePlayOrder()
+function trackListTable_moveDown() {
+	trackListTable.moveSelectedItemDown()
+	trackListTable.focus()
+	trackListTable_updatePlayOrder()
 	setDataChanged()
 }
-function playListItemsTable_modify() {
-	let keys = playListItemsTable.selectedDataKeys
+function trackListTable_modify() {
+	let keys = trackListTable.selectedDataKeys
 	if (keys.length > 0) {
 		modifyPlayListDetailDialog_ShufflePriority.value = '0'
 		modifyPlayListDetailDialog.onclose = function() {
 			if (modifyPlayListDetailDialog.returnValue == 'ok') {
 				let ShufflePriority = Number(modifyPlayListDetailDialog_ShufflePriority.value)
 				for (let i = 0; i < keys.length; ++i) {
-					let data = playListItemsTable.getDataByKey(keys[i])
+					let data = trackListTable.getDataByKey(keys[i])
 					data.shufflePriority = ShufflePriority
 				}
-				playListItemsTable.updateList()
+				trackListTable.updateList()
 				setDataChanged()
 			}
 		}
@@ -267,14 +267,14 @@ function playListTable_SearchContaining(searchItemKey) {
 	};
 	playListTable.updateList();
 }
-function playListItemsTable_Search() {
-	let keyWord = playListItemsButton_search.value
+function trackListTable_Search() {
+	let keyWord = trackListButton_search.value
 	if (keyWord == '') {
-		playListItemsTable.filterFunction = null
+		trackListTable.filterFunction = null
 	} else {
-		if (playListItemsSearchCaseInsensitive.checked) {
+		if (trackListSearchCaseInsensitive.checked) {
 			keyWord = keyWord.toLowerCase()
-			playListItemsTable.filterFunction = function(data) {
+			trackListTable.filterFunction = function(data) {
 				let searchTexts = data.data.searchLowerCaseTexts
 				for (let j = 0; j < searchTexts.length; ++j) {
 					if (searchTexts[j].indexOf(keyWord) != -1) {
@@ -284,7 +284,7 @@ function playListItemsTable_Search() {
 				return false
 			}
 		} else {
-			playListItemsTable.filterFunction = function(data) {
+			trackListTable.filterFunction = function(data) {
 				let searchTexts = data.data.searchTexts
 				for (let j = 0; j < searchTexts.length; ++j) {
 					if (searchTexts[j].indexOf(keyWord) != -1) {
@@ -295,7 +295,7 @@ function playListItemsTable_Search() {
 			}
 		}
 	}
-	playListItemsTable.scrollToRowByDataKey(playListItemsTable.selectedDataKey, true)
+	trackListTable.scrollToRowByDataKey(trackListTable.selectedDataKey, true)
 }
 function searchTotallist_onKeyUp() {
 	if (event.keyCode == 13) {
@@ -307,9 +307,9 @@ function searchPlayList_onKeyUp() {
 		playListTable_Search()
 	}
 }
-function searchPlayListItems_onKeyUp() {
+function searchTrackList_onKeyUp() {
 	if (event.keyCode == 13) {
-		playListItemsTable_Search()
+		trackListTable_Search()
 	}
 }
 function library_copyTitle(list) {

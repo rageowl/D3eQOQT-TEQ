@@ -134,7 +134,7 @@ function updatePlayerOrder() {
 	const playOrderMap = playState.currentViewContext.playOrderMap
 	const newPlayOrder = []
 	for (let i = 0; i < playOrder.length; ++i) {
-		if (playListItemsTable.getDataByKey(playOrder[i].key)) {
+		if (trackListTable.getDataByKey(playOrder[i].key)) {
 			newPlayOrder.push(playOrder[i])
 		}
 	}
@@ -143,11 +143,11 @@ function updatePlayerOrder() {
 }
 function playList_shufflePlayOrder() {
 	playContext_shufflePlayOrder(playState.currentViewContext)
-	playListItemsTable.updateList()
+	trackListTable.updateList()
 }
 function playList_resetPlayOrder() {
 	playContext_resetPlayOrder(playState.currentViewContext)
-	playListItemsTable.updateList()
+	trackListTable.updateList()
 	}
 function playList_shuffle() {
 	const sufflePlayList = playState.currentViewContext ? playState.currentViewContext.shuffled : false

@@ -55,7 +55,7 @@
 							<input type="button" onClick="library_selectAll()" value="Select All"/>
 							<input type="button" onClick="library_clearAll()" value="Clear All"/>
 							<input type="button" onClick="library_modify()" value="Batch Edit"/>
-							<input type="button" onClick="library_addToPlaylist(true)" value="Add selected clips to PlayListItems"/>
+							<input type="button" onClick="library_addToPlaylist(true)" value="Add selected clips to TrackList"/>
 							<input type="button" onClick="library_makePlayListPanel(true)" value="Make PlayList with selected clips"/>
 							<input type="button" onClick="library_makeGroupedPlayListPanel(true)" value="Make Grouped PlayList with selected clips"/>
 						</div>
@@ -81,7 +81,7 @@
 							<input type="button" onClick="playListTable_moveToBack()" value="Move to back"/>
 							<input type="button" onClick="playListTable_moveUp()" value="Move up"/>
 							<input type="button" onClick="playListTable_moveDown()" value="Move down"/>
-							<input type="button" onClick="playList_addSelectedToPlayListItems()" value="Add selected to PlayListItems"/>
+							<input type="button" onClick="playList_addSelectedToTrackList()" value="Add selected to TrackList"/>
 						</div>
 						<div style="display:flex">
 							<input style="flex:1" type="search" id="playListButton_search" onKeyUp="searchPlayList_onKeyUp()">
@@ -97,26 +97,26 @@
 				</div>
 				<div id="divPlaylistItemsControls" style="flex:none;display:none;flex-direction:column;">
 					<div>
-						<input type="button" onClick="playListItemsTable_scrollToCurrent()" value="ScrollTo"/>
-						<input type="button" onClick="playListItemsTable_selectAll()" value="Select All"/>
-						<input type="button" onClick="playListItemsTable_clearAll()" value="Clear All"/>
-						<input type="button" onClick="playListItemsTable_play(playListItemsTable.selectedDataKey)" value="Play"/>
-						<input type="button" onClick="playListItemsTable_playOrOpen(playListItemsTable.selectedDataKey, false)" value="Open"/>
-						<input type="button" onClick="playListItemsTable_deleteSelected()" value="Delete"/>
-						<input type="button" onClick="playListItemsTable_deleteAll()" value="Delete All"/>
-						<input type="button" onClick="playListItemsTable_moveToFront()" value="Move to front"/>
-						<input type="button" onClick="playListItemsTable_moveToBack()" value="Move to back"/>
-						<input type="button" onClick="playListItemsTable_moveUp()" value="Move up"/>
-						<input type="button" onClick="playListItemsTable_moveDown()" value="Move down"/>
-						<input type="button" onClick="playListItemsTable_modify()" value="Batch Edit"/>
+						<input type="button" onClick="trackListTable_scrollToCurrent()" value="ScrollTo"/>
+						<input type="button" onClick="trackListTable_selectAll()" value="Select All"/>
+						<input type="button" onClick="trackListTable_clearAll()" value="Clear All"/>
+						<input type="button" onClick="trackListTable_play(trackListTable.selectedDataKey)" value="Play"/>
+						<input type="button" onClick="trackListTable_playOrOpen(trackListTable.selectedDataKey, false)" value="Open"/>
+						<input type="button" onClick="trackListTable_deleteSelected()" value="Delete"/>
+						<input type="button" onClick="trackListTable_deleteAll()" value="Delete All"/>
+						<input type="button" onClick="trackListTable_moveToFront()" value="Move to front"/>
+						<input type="button" onClick="trackListTable_moveToBack()" value="Move to back"/>
+						<input type="button" onClick="trackListTable_moveUp()" value="Move up"/>
+						<input type="button" onClick="trackListTable_moveDown()" value="Move down"/>
+						<input type="button" onClick="trackListTable_modify()" value="Batch Edit"/>
 						<label for="playList_checkBoxShuffle" style="cursor:pointer"><input id="playList_checkBoxShuffle" type="checkbox" style="cursor:pointer" onClick="playList_saveCheckboxes()">Shuffle</label>
 						<label for="playList_checkBoxPlayEntireList" style="cursor:pointer"><input id="playList_checkBoxPlayEntireList" type="checkbox" style="cursor:pointer" onClick="playList_saveCheckboxes()">PlayAll</label>
 					</div>
 					<div style="display:flex">
-						<input style="flex:1" type="search" id="playListItemsButton_search" onKeyUp="searchPlayListItems_onKeyUp()">
+						<input style="flex:1" type="search" id="trackListButton_search" onKeyUp="searchTrackList_onKeyUp()">
 						<div style="flex:none">
-							<button onClick="playListItemsTable_Search()">Search</button>
-							<input id="playListItemsSearchCaseInsensitive" type="checkbox" checked="true">CaseInsensitive</input>
+							<button onClick="trackListTable_Search()">Search</button>
+							<input id="trackListSearchCaseInsensitive" type="checkbox" checked="true">CaseInsensitive</input>
 						</div>
 					</div>
 				</div>

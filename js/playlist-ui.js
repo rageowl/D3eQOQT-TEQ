@@ -54,18 +54,18 @@ function panel_createHeaders(panel) {
 
 function panel_initTableHandlers(panel, table) {
 	table.ondblclick = function(e) {
-		playListItemsTable_playOrOpen(this.selectedDataKey, true)
+		trackListTable_playOrOpen(this.selectedDataKey, true)
 	}
 	table.onkeydown = function(e) {
 		if (e.keyCode == 46) {
-			playListItemsTable_deleteSelected()
+			trackListTable_deleteSelected()
 		} else if (e.ctrlKey && e.keyCode == 67) {
-			copySelectedItemsToClipboard(playListItemsTable)
+			copySelectedItemsToClipboard(trackListTable)
 		}
 	}
 	table.draggable = true
 	table.ondragstart = function(e, dataKey) {
-		let keys = playListItemsTable.selectedDataKeys
+		let keys = trackListTable.selectedDataKeys
 		let data = JSON.stringify(keys)
 		e.dataTransfer.setData("wnfplayitem", data);
 		e.dataTransfer.dropEffect = "move"
@@ -95,7 +95,7 @@ function panel_initTableHandlers(panel, table) {
 			setDataChanged()
 		} else if (data = e.dataTransfer.getData("wnfplayitem")) {
 			let keys = JSON.parse(data)
-			if (table === playListItemsTable) {
+			if (table === trackListTable) {
 				// 같은 패널 내 재정렬
 				removeItemOnce(keys, dataKey)
 				if (keys.length == 0) return
@@ -105,10 +105,10 @@ function panel_initTableHandlers(panel, table) {
 				table.endUpdate()
 			} else {
 				// 다른 패널로 복사
-				if (!playListItemsTable || keys.length == 0) return
+				if (!trackListTable || keys.length == 0) return
 				table.beginUpdate()
 				for (let i = 0; i < keys.length; ++i) {
-					const srcItem = playListItemsTable.getDataByKey(keys[i])
+					const srcItem = trackListTable.getDataByKey(keys[i])
 					if (srcItem) {
 						const newItem = playList_insertItem(playList, srcItem.data, dataKey, front)
 						dataKey = newItem.key
@@ -139,7 +139,7 @@ function panel_initTableHandlers(panel, table) {
 			videoClipTable.updateList()
 			setDataChanged()
 		}
-		playListItemsTable_updatePlayOrder()
+		trackListTable_updatePlayOrder()
 	}
 	table.ondragover = function(e, dataKey) {
 		let types = e.dataTransfer.types
@@ -170,12 +170,12 @@ function panel_initTableHandlers(panel, table) {
 		}
 	}
 	table.onSorted = function(t) {
-		playListItemsTable_updatePlayOrder()
+		trackListTable_updatePlayOrder()
 		setDataChanged()
 	}
 	table.oncontextmenu = function(event, d) {
 		event.preventDefault()
-		playListItemsContextMenu.show(event.clientX, event.clientY)
+		trackListContextMenu.show(event.clientX, event.clientY)
 	}
 }
 
@@ -255,7 +255,7 @@ function panel_close(panel) {
 			panel_activate(last)
 		} else {
 			playState.activePanel = null
-			playListItemsTable = null
+			trackListTable = null
 			playState.viewContextStack = []
 			playState.currentViewContext = null
 			updateDivVisible()
@@ -266,7 +266,7 @@ function panel_close(panel) {
 
 function panel_activate(panel) {
 	playState.activePanel = panel
-	playListItemsTable = panel.table
+	trackListTable = panel.table
 	playState.viewContextStack = panel.viewContextStack
 	playState.currentViewContext = panel.viewContextStack.length > 0
 		? panel.viewContextStack[panel.viewContextStack.length - 1]
@@ -317,7 +317,7 @@ function playList_push(playList) {
 }
 function playList_setPage(playList) {
 	playState.currentViewContext = playContext_get(playList)
-	playListItemsTable.setData(playList.items)
+	trackListTable.setData(playList.items)
 	playList_checkBoxShuffle.checked = playList.shuffle
 	playList_checkBoxPlayEntireList.checked = playList.entirePlay
 	playListTable.updateList()
@@ -336,16 +336,16 @@ function playListTable_ForeachSelection(func) {
 	refreshControlPanel()
 	setDataChanged()
 }
-function playListItemsTable_ForeachSelection(func) {
-	let selectedDataKeys = playListItemsTable.selectedDataKeys
+function trackListTable_ForeachSelection(func) {
+	let selectedDataKeys = trackListTable.selectedDataKeys
 	if (selectedDataKeys.length == 0) {
 		return
 	}
 	for (let i = 0; i < selectedDataKeys.length; ++i) {
-		let item = playListItemsTable.getDataByKey(selectedDataKeys[i])
+		let item = trackListTable.getDataByKey(selectedDataKeys[i])
 		func(item)
 	}
-	playListItemsTable.updateList()
+	trackListTable.updateList()
 	refreshControlPanel()
 	setDataChanged()
 }
@@ -382,19 +382,19 @@ function playListTable_deleteSelected() {
 				playState.viewContextStack.splice(i, playState.viewContextStack.length)
 				const ctx = playState.viewContextStack[playState.viewContextStack.length - 1]
 				playList_setPage(ctx.data)
-				if (ctx.currentViewingItem && playListItemsTable) {
-					playListItemsTable.selectedDataKey = ctx.currentViewingItem.key
+				if (ctx.currentViewingItem && trackListTable) {
+					trackListTable.selectedDataKey = ctx.currentViewingItem.key
 				}
 			} else {
 				array_clear(playState.viewContextStack)
-				playListItemsTable.setData([])
+				trackListTable.setData([])
 			}
 			deleted = true
 			break
 		}
 	}
 	if (!deleted) {
-		if (playListItemsTable) playListItemsTable.refreshList()
+		if (trackListTable) trackListTable.refreshList()
 	}
 	videoClipTable.updateList()
 
@@ -472,7 +472,7 @@ function refreshControlPanel() {
 						const ctx = panel.viewContextStack[panel.viewContextStack.length - 1]
 						playList_setPage(ctx.data)
 						if (ctx.currentViewingItem) {
-							playListItemsTable.selectedDataKey = ctx.currentViewingItem.key
+							trackListTable.selectedDataKey = ctx.currentViewingItem.key
 						}
 					}
 				}
@@ -507,8 +507,8 @@ function refreshControlPanel() {
 					playState.viewContextStack.splice(idx, playState.viewContextStack.length)
 					const ctx = playState.viewContextStack[playState.viewContextStack.length - 1]
 					playList_setPage(ctx.data)
-					if (ctx.currentViewingItem && playListItemsTable) {
-						playListItemsTable.selectedDataKey = ctx.currentViewingItem.key
+					if (ctx.currentViewingItem && trackListTable) {
+						trackListTable.selectedDataKey = ctx.currentViewingItem.key
 					}
 				}
 			}
@@ -615,29 +615,29 @@ function showCopyToClipboardDialog(list) {
 		alert('The <dialog> API is not supported by this browser')
 	}
 }
-function playListItemsTable_selectAll() {
-	playListItemsTable.selectAll()
+function trackListTable_selectAll() {
+	trackListTable.selectAll()
 }
-function playListItemsTable_clearAll() {
-	playListItemsTable.clearSelection()
+function trackListTable_clearAll() {
+	trackListTable.clearSelection()
 }
 function playList_onKeyDown() {
 	if (event.keyCode == 46) {
-		playListItemsTable_deleteSelected()
+		trackListTable_deleteSelected()
 	} else {
-		list_onKeyDown(playListItemsTable)
+		list_onKeyDown(trackListTable)
 	}
 }
-function playListItemsTable_deleteSelected() {
-	let selectedDataKeys = playListItemsTable.selectedDataKeys
+function trackListTable_deleteSelected() {
+	let selectedDataKeys = trackListTable.selectedDataKeys
 	if (selectedDataKeys.length == 0) {
 		return
 	}
-	playListItemsTable.beginUpdate()
-	let items = playListItemsTable.deleteSelection()
+	trackListTable.beginUpdate()
+	let items = trackListTable.deleteSelection()
 	playList_itemsDeleted(items)
 	updatePlayerOrder()
-	playListItemsTable.endUpdate()
+	trackListTable.endUpdate()
 	playListTable.updateList()
 	videoClipTable.updateList()
 
@@ -648,10 +648,10 @@ function playListItemsTable_deleteSelected() {
 			break
 		}
 	}
-	playListItemsTable.focus()
+	trackListTable.focus()
 	setDataChanged()
 }
-function playListItemsTable_deleteAll() {
+function trackListTable_deleteAll() {
 	if (playState.playContextStack.length != 0) {
 		common_stopVideo(false)
 	}
@@ -661,8 +661,8 @@ function playListItemsTable_deleteAll() {
 	playList_itemsDeleted(playState.currentViewContext.data.items)
 	array_clear(playState.currentViewContext.data.items)
 	videoClipTable.updateList()
-	playListItemsTable.refreshList()
-	playListItemsTable.focus()
+	trackListTable.refreshList()
+	trackListTable.focus()
 	refreshControlPanel()
 	setDataChanged()
 }
@@ -676,9 +676,9 @@ function updateDivVisible() {
 	divTestClipTime.style.display = showTestClipTime.checked ? 'flex' : 'none'
 }
 
-function playListItemsTable_scrollToCurrent() {
-	if (playListItemsTable && playState.currentViewContext && playState.currentViewContext.currentPlayingItem) {
-		playListItemsTable.scrollToRowByDataKey(playState.currentViewContext.currentPlayingItem.key, true)
+function trackListTable_scrollToCurrent() {
+	if (trackListTable && playState.currentViewContext && playState.currentViewContext.currentPlayingItem) {
+		trackListTable.scrollToRowByDataKey(playState.currentViewContext.currentPlayingItem.key, true)
 	}
 }
 function playList_newPanel() {
@@ -732,7 +732,7 @@ function playList_editPanel() {
 				data.entirePlay = playListDialog_cbPlayEntireVideo.checked
 				makeSearchText(data)
 				playListTable.updateList()
-				playListItemsTable.updateList()
+				trackListTable.updateList()
 				setDataChanged()
 				playList_updateCheckboxes()
 			}
@@ -830,17 +830,17 @@ function library_addToPlaylist(selected) {
 		return
 	}
 	let itmeKeys = []
-	playListItemsTable.beginUpdate()
+	trackListTable.beginUpdate()
 	for (let i = 0; i < keys.length; ++i) {
 		let data = videoClipTable.getDataByKey(keys[i])
 		let item = playList_insertItem(null, data)
 		itmeKeys.push(item.key)
 	}
-	playListItemsTable.endUpdate()
+	trackListTable.endUpdate()
 	videoClipTable.updateList()
-	playListItemsTable.clearSelection()
+	trackListTable.clearSelection()
 	for (let i = 0; i < itmeKeys.length; ++i) {
-		playListItemsTable.setDataRowSelection(itmeKeys[i], true)
+		trackListTable.setDataRowSelection(itmeKeys[i], true)
 	}
 	setDataChanged()
 }
