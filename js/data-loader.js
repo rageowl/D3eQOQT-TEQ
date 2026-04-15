@@ -114,6 +114,7 @@ function readData_Finalize()
 		}
 	}
 	if (playListItems.length) {
+		playState.previewPlayList = playListItems[0]
 		playList_open(playListItems[0])
 	}
 	playListTable.setData(playListItems)

@@ -109,6 +109,7 @@ let playListHeaders = [
 	playListTable.headerDivClassName = 'userTblHead'
 	playListTable.bodyDivClassName = 'userTbl'
 	playListTable.ondblclick = function(e) {
+		playState.previewPlayList = this.getDataByKey(this.selectedDataKey)
 		playList_open(this.getDataByKey(this.selectedDataKey))
 	}
 	
@@ -262,7 +263,9 @@ let playListHeaders = [
 		let itemSelect = playListContextMenu.addItem()
 		itemSelect.setElements('Select')
 		itemSelect.onclick = function() {
-			playList_open(playListTable.getDataByKey(playListTable.selectedDataKey))
+			const data = playListTable.getDataByKey(playListTable.selectedDataKey)
+			playState.previewPlayList = data
+			playList_open(data)
 		}
 		let itemOpenInNewPanel = playListContextMenu.addItem()
 		itemOpenInNewPanel.setElements('Open in New Panel')

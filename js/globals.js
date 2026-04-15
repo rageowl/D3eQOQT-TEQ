@@ -50,6 +50,7 @@ const playState = {
 	ReservedVolume: undefined,
 	LastVideoTime: 0,
 	LastExecFinishVideoTime: 0,
+	previewPlayList: null,
 }
 
 // ── DOM 헬퍼 ─────────────────────────────────────────────────────────────────

@@ -515,6 +515,28 @@ function refreshControlPanel() {
 		})(i + 1)
 		divPlayPath.appendChild(anchor)
 	}
+	if (playState.previewPlayList) {
+		const alreadyInStack = playState.playContextStack.some(ctx => ctx.data === playState.previewPlayList)
+		if (!alreadyInStack) {
+			if (playState.playContextStack.length > 0) {
+				const sep = document.createElement('label')
+				sep.appendChild(document.createTextNode('->'))
+				divPlayPath.appendChild(sep)
+			}
+			const anchor = document.createElement('a')
+			anchor.innerHTML = `[${playState.previewPlayList.trackName} / ${playState.previewPlayList.originalArtist}]`
+			anchor.href = '#'
+			anchor.style.opacity = '0.5'
+			anchor.style.fontStyle = 'italic'
+			anchor.onclick = (function(pl) {
+				return function(e) {
+					e.preventDefault()
+					playList_open(pl)
+				}
+			})(playState.previewPlayList)
+			divPlayPath.appendChild(anchor)
+		}
+	}
 
 	const useIndividualVolume = playState.currentVideoClip && individualVolumeMap.has(playState.currentVideoClip.key)
 	individualVolume.checked = useIndividualVolume
