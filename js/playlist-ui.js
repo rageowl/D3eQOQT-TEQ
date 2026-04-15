@@ -667,7 +667,7 @@ function playListItemsTable_deleteAll() {
 	setDataChanged()
 }
 function updateDivVisible() {
-	divTotallist.style.display = showTotallist.checked ? 'flex' : 'none'
+	divLibrary.style.display = showLibrary.checked ? 'flex' : 'none'
 	divPlaylistPanel.style.display = showPlaylist.checked ? 'flex' : 'none'
 	const hasPanels = playState.openPanels.length > 0
 	divPlaylistItemsControls.style.display = hasPanels ? 'flex' : 'none'
@@ -824,7 +824,7 @@ function playListTable_modify() {
 		}
 	}
 }
-function totalList_addToPlaylist(selected) {
+function library_addToPlaylist(selected) {
 	let keys = selected ? videoClipTable.selectedDataKeys.slice() : videoClipTable.copyDataOrder()
 	if (keys.length == 0) {
 		return
@@ -844,13 +844,13 @@ function totalList_addToPlaylist(selected) {
 	}
 	setDataChanged()
 }
-function totalList_selectAll() {
+function library_selectAll() {
 	videoClipTable.selectAll()
 }
-function totalList_clearAll() {
+function library_clearAll() {
 	videoClipTable.clearSelection()
 }
-function totalList_modify() {
+function library_modify() {
 	let keys = videoClipTable.selectedDataKeys
 	if (keys.length > 0) {
 		modifyVideoClipDialog_IndividualVolume.value = '0'
@@ -877,7 +877,7 @@ function totalList_modify() {
 		}
 	}
 }
-function totalList_makePlayListPanel(selectedClip) {
+function library_makePlayListPanel(selectedClip) {
 	let keys = selectedClip ? videoClipTable.selectedDataKeys.slice() : videoClipTable.copyDataOrder()
 	if (keys.length == 0) {
 		return
@@ -898,10 +898,10 @@ function totalList_makePlayListPanel(selectedClip) {
 	let items = videoClipTable.getDataByKey(keys)
 	for (let i = 0; i < items.length; ++i) {
 		const item = items[i]
-		playListDialog_Category.value = totalList_selectRepresentText(playListDialog_Category.value, item.category, commonCategory)
-		playListDialog_TrackName.value = totalList_selectRepresentText(playListDialog_TrackName.value, item.trackName, commonTrackName)
-		playListDialog_OriginalArtist.value = totalList_selectRepresentText(playListDialog_OriginalArtist.value, item.originalArtist, commonOriginalArtist)
-		playListDialog_CoveredBy.value = totalList_selectRepresentText(playListDialog_CoveredBy.value, item.coveredBy, commonCoveredBy)
+		playListDialog_Category.value = library_selectRepresentText(playListDialog_Category.value, item.category, commonCategory)
+		playListDialog_TrackName.value = library_selectRepresentText(playListDialog_TrackName.value, item.trackName, commonTrackName)
+		playListDialog_OriginalArtist.value = library_selectRepresentText(playListDialog_OriginalArtist.value, item.originalArtist, commonOriginalArtist)
+		playListDialog_CoveredBy.value = library_selectRepresentText(playListDialog_CoveredBy.value, item.coveredBy, commonCoveredBy)
 	}
 
 	playListDialog.onclose = function() {
@@ -933,37 +933,37 @@ function totalList_makePlayListPanel(selectedClip) {
 		alert("The <dialog> API is not supported by this browser");
 	}
 }
-function totalList_makeGroupedPlayListPanel(selectedClip) {
-	totalListHeaderSelect_cbCategory.checked = true
-	totalListHeaderSelect_cbDate.checked = true
-	totalListHeaderSelect_cbTitle.checked = true
-	totalListHeaderSelect_cbOriSinger.checked = true
-	totalListHeaderSelect_cbSinger.checked = true
-	totalListHeaderSelect_cbShuffle.checked = true
-	totalListHeaderSelect_cbPlayEntireVideo.checked = false
-	totalListHeaderSelect_cbAppendIfExists.checked = false
-	totalListHeaderSelect_cbAppendToFront.checked = true
-	totalListHeaderSelect_cbAppendToFront.disabled = true
-	totalListHeaderSelect_CommonCategory.value = "Various Category"
-	totalListHeaderSelect_CommonTrackName.value = "Various Track"
-	totalListHeaderSelect_CommonOriginalArtist.value = "Various Artist"
-	totalListHeaderSelect_CommonCoveredBy.value = "Various Artist"
-	totalListHeaderSelectDialog.onclose = function() {
-		if (totalListHeaderSelectDialog.returnValue == 'ok') {
+function library_makeGroupedPlayListPanel(selectedClip) {
+	libraryHeaderSelect_cbCategory.checked = true
+	libraryHeaderSelect_cbDate.checked = true
+	libraryHeaderSelect_cbTitle.checked = true
+	libraryHeaderSelect_cbOriSinger.checked = true
+	libraryHeaderSelect_cbSinger.checked = true
+	libraryHeaderSelect_cbShuffle.checked = true
+	libraryHeaderSelect_cbPlayEntireVideo.checked = false
+	libraryHeaderSelect_cbAppendIfExists.checked = false
+	libraryHeaderSelect_cbAppendToFront.checked = true
+	libraryHeaderSelect_cbAppendToFront.disabled = true
+	libraryHeaderSelect_CommonCategory.value = "Various Category"
+	libraryHeaderSelect_CommonTrackName.value = "Various Track"
+	libraryHeaderSelect_CommonOriginalArtist.value = "Various Artist"
+	libraryHeaderSelect_CommonCoveredBy.value = "Various Artist"
+	libraryHeaderSelectDialog.onclose = function() {
+		if (libraryHeaderSelectDialog.returnValue == 'ok') {
 			const headerNames = []
-			if (totalListHeaderSelect_cbCategory.checked) {
+			if (libraryHeaderSelect_cbCategory.checked) {
 				headerNames.push('category')
 			}
-			if (totalListHeaderSelect_cbDate.checked) {
+			if (libraryHeaderSelect_cbDate.checked) {
 				headerNames.push('date')
 			}
-			if (totalListHeaderSelect_cbTitle.checked) {
+			if (libraryHeaderSelect_cbTitle.checked) {
 				headerNames.push('trackName')
 			}
-			if (totalListHeaderSelect_cbOriSinger.checked) {
+			if (libraryHeaderSelect_cbOriSinger.checked) {
 				headerNames.push('originalArtist')
 			}
-			if (totalListHeaderSelect_cbSinger.checked) {
+			if (libraryHeaderSelect_cbSinger.checked) {
 				headerNames.push('coveredBy')
 			}
 
@@ -974,21 +974,21 @@ function totalList_makeGroupedPlayListPanel(selectedClip) {
 			if (headers.length == 0) {
 				return
 			}
-			const shuffle = totalListHeaderSelect_cbShuffle.checked
-			const playEntireVideo = totalListHeaderSelect_cbPlayEntireVideo.checked
-			const commonCategory = totalListHeaderSelect_CommonCategory.value
-			const commonTrackName = totalListHeaderSelect_CommonTrackName.value
-			const commonOriginalArtist = totalListHeaderSelect_CommonOriginalArtist.value
-			const commonCoveredBy = totalListHeaderSelect_CommonCoveredBy.value
+			const shuffle = libraryHeaderSelect_cbShuffle.checked
+			const playEntireVideo = libraryHeaderSelect_cbPlayEntireVideo.checked
+			const commonCategory = libraryHeaderSelect_CommonCategory.value
+			const commonTrackName = libraryHeaderSelect_CommonTrackName.value
+			const commonOriginalArtist = libraryHeaderSelect_CommonOriginalArtist.value
+			const commonCoveredBy = libraryHeaderSelect_CommonCoveredBy.value
 			let option = {
 				selectedClip : selectedClip,
 				shuffle : shuffle,
 				playEntireVideo : playEntireVideo,
-				appendIfExists : totalListHeaderSelect_cbAppendIfExists.checked,
-				appendtoFront : totalListHeaderSelect_cbAppendToFront.checked,
+				appendIfExists : libraryHeaderSelect_cbAppendIfExists.checked,
+				appendtoFront : libraryHeaderSelect_cbAppendToFront.checked,
 				commonTextMap : { category:commonCategory, trackName:commonTrackName, originalArtist:commonOriginalArtist, coveredBy:commonCoveredBy },
 			}
-			const playListData = totalList_makeGroupedPlayList(headers, option)
+			const playListData = library_makeGroupedPlayList(headers, option)
 			if (playListData.length) {
 				playListTable.clearSelection()
 				playListTable.insertDataList(playListData)
@@ -1003,13 +1003,13 @@ function totalList_makeGroupedPlayListPanel(selectedClip) {
 			setDataChanged()
 		}
 	}
-	if (typeof totalListHeaderSelectDialog.showModal === "function") {
-		totalListHeaderSelectDialog.showModal();
+	if (typeof libraryHeaderSelectDialog.showModal === "function") {
+		libraryHeaderSelectDialog.showModal();
 	} else {
 		alert("The <dialog> API is not supported by this browser");
 	}
 }
-function totalList_selectRepresentText(a, b, def) {
+function library_selectRepresentText(a, b, def) {
 	if (a == b) {
 		return a
 	}
@@ -1018,7 +1018,7 @@ function totalList_selectRepresentText(a, b, def) {
 	}
 	return def
 }
-function totalList_selectRepresentDate(a, b) {
+function library_selectRepresentDate(a, b) {
 	if (a == null) {
 		return b
 	}
@@ -1047,7 +1047,7 @@ function dataList_groupBy(dataList, headers) {
 	}
 	return groupMap
 }
-function totalList_makeGroupedPlayList(headers, options) {
+function library_makeGroupedPlayList(headers, options) {
 	let dataList = []
 	let dataOrder = options.selectedClip ? videoClipTable.selectedDataKeys : videoClipTable.copyDataOrder()
 	for (let i = 0; i < dataOrder.length; ++i) {
@@ -1081,7 +1081,7 @@ function makeGroupedPlayListByDataList(dataList, headers, options) {
 					playList_insertItems(playList, items, null, appendtoFront)
 					for (let i = 0; i < items.length; ++i) {
 						const item = items[i]
-						playList.date = totalList_selectRepresentDate(playList.date, item.date)
+						playList.date = library_selectRepresentDate(playList.date, item.date)
 					}
 				}
 				continue
@@ -1099,11 +1099,11 @@ function makeGroupedPlayListByDataList(dataList, headers, options) {
 		for (let i = 0; i < items.length; ++i) {
 			const item = items[i]
 			playList_newItem(subplayList, item, 0)
-			subplayList.category = totalList_selectRepresentText(subplayList.category, item.category, commonCategory)
-			subplayList.trackName = totalList_selectRepresentText(subplayList.trackName, item.trackName, commonTrackName)
-			subplayList.originalArtist = totalList_selectRepresentText(subplayList.originalArtist, item.originalArtist, commonOriginalArtist)
-			subplayList.coveredBy = totalList_selectRepresentText(subplayList.coveredBy, item.coveredBy, commonCoveredBy)
-			subplayList.date = totalList_selectRepresentDate(subplayList.date, item.date)
+			subplayList.category = library_selectRepresentText(subplayList.category, item.category, commonCategory)
+			subplayList.trackName = library_selectRepresentText(subplayList.trackName, item.trackName, commonTrackName)
+			subplayList.originalArtist = library_selectRepresentText(subplayList.originalArtist, item.originalArtist, commonOriginalArtist)
+			subplayList.coveredBy = library_selectRepresentText(subplayList.coveredBy, item.coveredBy, commonCoveredBy)
+			subplayList.date = library_selectRepresentDate(subplayList.date, item.date)
 		}
 		makeSearchText(subplayList)
 		playListItems.push(subplayList)

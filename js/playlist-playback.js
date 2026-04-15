@@ -289,7 +289,7 @@ function playVideoData(data) {
 		refreshPlayButton()
 	}, 100)
 }
-function totalList_playVideo(selectedIndex) {
+function library_playVideo(selectedIndex) {
 	if (selectedIndex < 0 || videoClipTable.length <= selectedIndex) {
 		common_stopVideo()
 		return

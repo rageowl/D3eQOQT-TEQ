@@ -40,7 +40,7 @@
 	prevButton.innerHTML = '\u23ea'
 	nextButton.innerText = '\u23e9'
 
-	let totalListHeaders = [
+	let libraryHeaders = [
 		{ name:'Ordinal', width:88, id:'ordinal', filter:true, sort:true, numeric:true },
 		{ name:'Date', width:110, id:'date', filter:true, sort:true },
 		{ name:'Track Name', width:400, id:'trackName', filter:true, sort:true, autoSize:true },
@@ -54,18 +54,18 @@
 		{ name:'Link', width:120, getter:function(d) { return getLink(d) } },
 		{ name:'IndividualVolume', width:150, filter:true, sort:true, numeric:true, getter:function(d) { return isUndefined(individualVolumeMap.get(d.key), 0) } },
 	]
-	videoClipTable = new MultiColumnList(totalList)
+	videoClipTable = new MultiColumnList(document.getElementById('library'))
 	videoClipTable.selectMode = isMobile.any() != null
 	videoClipTable.mainDivClassName = 'tblWrap'
 	videoClipTable.headerDivClassName = 'userTblHead'
 	videoClipTable.bodyDivClassName = 'userTbl'
 	videoClipTable.ondblclick = function(e) {
-		totalList_playVideo(this.selectedDataIndex)
+		library_playVideo(this.selectedDataIndex)
 	}
 
 	videoClipTable.onkeydown = function(e) {
 		if (e.keyCode == 13 && playState.activePanel) {
-		   totalList_addSelectedToPlaylist()
+		   library_addSelectedToPlaylist()
 		} else if (e.ctrlKey && e.keyCode == 67) {
 			copySelectedItemsToClipboard(videoClipTable)
 		}
@@ -79,7 +79,7 @@
 	}
 	videoClipTable.oncontextmenu = function(event, d) {
 		event.preventDefault()
-		totalListContextMenu.show(event.clientX, event.clientY)
+		libraryContextMenu.show(event.clientX, event.clientY)
 	}
 	
 let playListHeaders = [
@@ -217,7 +217,7 @@ let playListHeaders = [
 		event.preventDefault()
 		playListContextMenu.show(event.clientX, event.clientY)
 	}
-	videoClipTable.setHeader(totalListHeaders)
+	videoClipTable.setHeader(libraryHeaders)
 	playListTable.setHeader(playListHeaders)
 	
 	updateDivVisible()
@@ -230,17 +230,17 @@ let playListHeaders = [
 	individualVolume.step = 1				
 	
 	{
-		totalListContextMenu = new PopupMenu()
-		totalListContextMenu.className = 'contextMenuDiv'
-		totalListContextMenu.itemNormalClassName = 'contextMenuDivItemNormal'
-		totalListContextMenu.itemHoverClassName = 'contextMenuDivItemHover'
-		let itemPlay = totalListContextMenu.addItem()
+		libraryContextMenu = new PopupMenu()
+		libraryContextMenu.className = 'contextMenuDiv'
+		libraryContextMenu.itemNormalClassName = 'contextMenuDivItemNormal'
+		libraryContextMenu.itemHoverClassName = 'contextMenuDivItemHover'
+		let itemPlay = libraryContextMenu.addItem()
 		itemPlay.setElements('Play')
 		itemPlay.onclick = function() {
-			totalList_playVideo(videoClipTable.selectedDataIndex)
+			library_playVideo(videoClipTable.selectedDataIndex)
 		}
 
-		let itemSearchContaining = totalListContextMenu.addItem()
+		let itemSearchContaining = libraryContextMenu.addItem()
 		itemSearchContaining.setElements('Search for Playlists Containing Item')
 		itemSearchContaining.onclick = function() {
 			const _data = videoClipTable.getDataByKey(videoClipTable.selectedDataKey)
@@ -250,7 +250,7 @@ let playListHeaders = [
 			playListTable_SearchContaining(_data.key)
 		}
 
-		let itemCopyToClipboard = totalListContextMenu.addItem()
+		let itemCopyToClipboard = libraryContextMenu.addItem()
 		itemCopyToClipboard.setElements('CopyToClipboard')
 		itemCopyToClipboard.onclick = function() {
 			showCopyToClipboardDialog(videoClipTable)
@@ -397,7 +397,7 @@ let playListHeaders = [
 			let data = _item.data
 			if (data.type == 1)
 			{
-				showTotallist.checked = true
+				showLibrary.checked = true
 			}
 			else if (data.type == 2)
 			{

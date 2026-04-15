@@ -23,7 +23,7 @@
 			<div style="flex:none">
 				<input type="button" onClick="exportList()" value="Export"/>
 				<input type="button" onClick="importList()" value="Import"/>
-				<label for="showTotallist" style="cursor:pointer"><input id="showTotallist" type="checkbox" checked="true" onClick="updateDivVisible()" style="cursor:pointer">TotalList</label>
+				<label for="showLibrary" style="cursor:pointer"><input id="showLibrary" type="checkbox" checked="true" onClick="updateDivVisible()" style="cursor:pointer">Library</label>
 				<label for="showPlaylist" style="cursor:pointer"><input id="showPlaylist" type="checkbox" onClick="updateDivVisible()" style="cursor:pointer">PlayList</label>
 				<label for="showClipTableURL" style="cursor:pointer"><input id="showClipTableURL" type="checkbox" onClick="updateDivVisible()" style="cursor:pointer">ClipSpreadSheets</label>
 				<label for="showTestClipTime" style="cursor:pointer"><input id="showTestClipTime" type="checkbox" onClick="updateDivVisible()" style="cursor:pointer">TestClipTime</label>
@@ -38,30 +38,30 @@
 				</div>
 			</div>
 			<div style="flex-grow: 1;flex-shrink: 1;flex-basis: auto;overflow: hidden;display:flex;flex-direction:column;">
-				<div id="divTotallist" style="flex: 1 1 500px; overflow: hidden; display: none; flex-direction: column; margin-bottom: 10px;">
+				<div id="divLibrary" style="flex: 1 1 500px; overflow: hidden; display: none; flex-direction: column; margin-bottom: 10px;">
 					<div style="flex:none;display:flex;flex-direction:column;">
 						<div style="flex:none;display:flex">
 							<div style="flex:none">
-								[TotalList]
+								[Library]
 							</div>
 								<input style="flex:1" type="search" id="searchTotallist" onKeyUp="searchTotallist_onKeyUp()">
 							<div style="flex:none">
-								<button onClick="totalList_Search()">Search</button>
-								<input id="totalListSearchCaseInsensitive" type="checkbox" checked="true">CaseInsensitive</input>
+								<button onClick="library_Search()">Search</button>
+								<input id="librarySearchCaseInsensitive" type="checkbox" checked="true">CaseInsensitive</input>
 							</div>
 						</div>
 						<div style="flex:none">
-							<input type="button" onClick="totalList_playVideo(videoClipTable.selectedDataIndex)" value="Play"/>
-							<input type="button" onClick="totalList_selectAll()" value="Select All"/>
-							<input type="button" onClick="totalList_clearAll()" value="Clear All"/>
-							<input type="button" onClick="totalList_modify()" value="Batch Edit"/>
-							<input type="button" onClick="totalList_addToPlaylist(true)" value="Add selected clips to PlayListItems"/>
-							<input type="button" onClick="totalList_makePlayListPanel(true)" value="Make PlayList with selected clips"/>
-							<input type="button" onClick="totalList_makeGroupedPlayListPanel(true)" value="Make Grouped PlayList with selected clips"/>
+							<input type="button" onClick="library_playVideo(videoClipTable.selectedDataIndex)" value="Play"/>
+							<input type="button" onClick="library_selectAll()" value="Select All"/>
+							<input type="button" onClick="library_clearAll()" value="Clear All"/>
+							<input type="button" onClick="library_modify()" value="Batch Edit"/>
+							<input type="button" onClick="library_addToPlaylist(true)" value="Add selected clips to PlayListItems"/>
+							<input type="button" onClick="library_makePlayListPanel(true)" value="Make PlayList with selected clips"/>
+							<input type="button" onClick="library_makeGroupedPlayListPanel(true)" value="Make Grouped PlayList with selected clips"/>
 						</div>
 					</div>
 					<div style="overflow: hidden;flex: 1;display: flex;">
-						<div id="totalList"></div>
+						<div id="library"></div>
 					</div>
 				</div>
 				<div id="divPlaylistPanel" style="flex: 1 1 500px; overflow: hidden; display: none; flex-direction: column; margin-bottom: 10px;">
@@ -199,15 +199,15 @@
 			</menu>
 		  </form>
 		</dialog>
-		<dialog id="totalListHeaderSelectDialog">
+		<dialog id="libraryHeaderSelectDialog">
 		  <form method="dialog">
 			<p style="font-weight:bold;">Group By Headers</p>
 			<div style="display: flex; flex-direction: column; align-items: stretch;">
-				<label for="totalListHeaderSelect_cbCategory" style="cursor:pointer"><input id="totalListHeaderSelect_cbCategory" type="checkbox" style="cursor:pointer">Category</label>
-				<label for="totalListHeaderSelect_cbDate" style="cursor:pointer"><input id="totalListHeaderSelect_cbDate" type="checkbox" style="cursor:pointer">Date</label>
-				<label for="totalListHeaderSelect_cbTitle" style="cursor:pointer"><input id="totalListHeaderSelect_cbTitle" type="checkbox" style="cursor:pointer">Track Name</label>
-				<label for="totalListHeaderSelect_cbOriSinger" style="cursor:pointer"><input id="totalListHeaderSelect_cbOriSinger" type="checkbox" style="cursor:pointer">Original Artist</label>
-				<label for="totalListHeaderSelect_cbSinger" style="cursor:pointer"><input id="totalListHeaderSelect_cbSinger" type="checkbox" style="cursor:pointer">Covered By</label>
+				<label for="libraryHeaderSelect_cbCategory" style="cursor:pointer"><input id="libraryHeaderSelect_cbCategory" type="checkbox" style="cursor:pointer">Category</label>
+				<label for="libraryHeaderSelect_cbDate" style="cursor:pointer"><input id="libraryHeaderSelect_cbDate" type="checkbox" style="cursor:pointer">Date</label>
+				<label for="libraryHeaderSelect_cbTitle" style="cursor:pointer"><input id="libraryHeaderSelect_cbTitle" type="checkbox" style="cursor:pointer">Track Name</label>
+				<label for="libraryHeaderSelect_cbOriSinger" style="cursor:pointer"><input id="libraryHeaderSelect_cbOriSinger" type="checkbox" style="cursor:pointer">Original Artist</label>
+				<label for="libraryHeaderSelect_cbSinger" style="cursor:pointer"><input id="libraryHeaderSelect_cbSinger" type="checkbox" style="cursor:pointer">Covered By</label>
 			</div>
 			<p style="font-weight:bold;">Represent Text</p>
 			<div style="display: flex;">
@@ -218,21 +218,21 @@
 					<label>Covered By:</label>
 				</div>
 				<div style="display: flex; flex-direction: column; align-items: stretch;">
-					<input type="text" id="totalListHeaderSelect_CommonCategory">
-					<input type="text" id="totalListHeaderSelect_CommonTrackName">
-					<input type="text" id="totalListHeaderSelect_CommonOriginalArtist">
-					<input type="text" id="totalListHeaderSelect_CommonCoveredBy">
+					<input type="text" id="libraryHeaderSelect_CommonCategory">
+					<input type="text" id="libraryHeaderSelect_CommonTrackName">
+					<input type="text" id="libraryHeaderSelect_CommonOriginalArtist">
+					<input type="text" id="libraryHeaderSelect_CommonCoveredBy">
 				</div>
 			</div>
 			<p style="font-weight:bold;">Default Property</p>
 			<div style="display: flex; flex-direction: column; align-items: stretch;">
-				<label for="totalListHeaderSelect_cbShuffle" style="cursor:pointer"><input id="totalListHeaderSelect_cbShuffle" type="checkbox" style="cursor:pointer">Shuffle</label>
-				<label for="totalListHeaderSelect_cbPlayEntireVideo" style="cursor:pointer"><input id="totalListHeaderSelect_cbPlayEntireVideo" type="checkbox" style="cursor:pointer">PlayAll</label>
+				<label for="libraryHeaderSelect_cbShuffle" style="cursor:pointer"><input id="libraryHeaderSelect_cbShuffle" type="checkbox" style="cursor:pointer">Shuffle</label>
+				<label for="libraryHeaderSelect_cbPlayEntireVideo" style="cursor:pointer"><input id="libraryHeaderSelect_cbPlayEntireVideo" type="checkbox" style="cursor:pointer">PlayAll</label>
 			</div>
 			<p style="font-weight:bold;">Make Option</p>
 			<div style="display: flex; flex-direction: column; align-items: stretch;">
-				<label for="totalListHeaderSelect_cbAppendIfExists" style="cursor:pointer"><input id="totalListHeaderSelect_cbAppendIfExists" type="checkbox" style="cursor:pointer" onclick="totalListHeaderSelect_cbAppendToFront.disabled = !totalListHeaderSelect_cbAppendIfExists.checked">Append to PlayList if exists</label>
-				<label for="totalListHeaderSelect_cbAppendToFront" style="cursor:pointer"><input id="totalListHeaderSelect_cbAppendToFront" type="checkbox" style="cursor:pointer" checked="true" disabled="true">Append to Front</label>
+				<label for="libraryHeaderSelect_cbAppendIfExists" style="cursor:pointer"><input id="libraryHeaderSelect_cbAppendIfExists" type="checkbox" style="cursor:pointer" onclick="libraryHeaderSelect_cbAppendToFront.disabled = !libraryHeaderSelect_cbAppendIfExists.checked">Append to PlayList if exists</label>
+				<label for="libraryHeaderSelect_cbAppendToFront" style="cursor:pointer"><input id="libraryHeaderSelect_cbAppendToFront" type="checkbox" style="cursor:pointer" checked="true" disabled="true">Append to Front</label>
 			</div>
 			<menu>
 				<div style="display: flex; flex-direction: row-reverse;">

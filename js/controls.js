@@ -186,13 +186,13 @@ function playListItemsTable_modify() {
 		}
 	}
 }
-function totalList_Search() {
+function library_Search() {
 	let keyWord = searchTotallist.value
 	if (keyWord == '') {
 		videoClipTable.filterFunction = null
 	} else {
 		let dataOrder = []
-		if (totalListSearchCaseInsensitive.checked) {
+		if (librarySearchCaseInsensitive.checked) {
 			keyWord = keyWord.toLowerCase()
 			videoClipTable.filterFunction = function(data) {
 				let searchTexts = data.searchLowerCaseTexts
@@ -299,7 +299,7 @@ function playListItemsTable_Search() {
 }
 function searchTotallist_onKeyUp() {
 	if (event.keyCode == 13) {
-		totalList_Search()
+		library_Search()
 	}
 }
 function searchPlayList_onKeyUp() {
@@ -312,7 +312,7 @@ function searchPlayListItems_onKeyUp() {
 		playListItemsTable_Search()
 	}
 }
-function totalList_copyTitle(list) {
+function library_copyTitle(list) {
 	let options = list.selectedOptions
 	let text = ''
 	for (let i = 0; i < options.length; ++i) {
@@ -326,14 +326,14 @@ function totalList_copyTitle(list) {
 }
 function list_onKeyDown(list) {
 	if (event.keyCode == 67) {
-		totalList_copyTitle(list)
+		library_copyTitle(list)
 	}
 }
 function list_onKeyUp(list) {
 }
-function totalList_onKeyDown() {
+function library_onKeyDown() {
 	if (event.keyCode == 13 && showPlaylist.checked) {
-		totalList_addSelectedToPlaylist()
+		library_addSelectedToPlaylist()
 	} else {
 		list_onKeyDown(videoClipTable)
 	}

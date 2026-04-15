@@ -50,7 +50,7 @@ function readData_Finalize()
 			
 	let playListItems = []
 	if (playListData != undefined && playListData.length > 0) {
-		showTotallist.checked = false
+		showLibrary.checked = false
 		showPlaylist.checked = false
 		let playListMap = new Map()
 		for (let i = 0; i < playListData.length; ++i) {
@@ -75,7 +75,7 @@ function readData_Finalize()
 			}
 		}
 	} else {
-		showTotallist.checked = false
+		showLibrary.checked = false
 		showPlaylist.checked = false
 
 		const headers = videoClipTable.selectHeader(['trackName'])
@@ -88,11 +88,11 @@ function readData_Finalize()
 				selectedClip : false,
 				shuffle : false,
 				playEntireVideo : false,
-				appendIfExists : totalListHeaderSelect_cbAppendIfExists.checked,
-				appendtoFront : totalListHeaderSelect_cbAppendToFront.checked,
+				appendIfExists : libraryHeaderSelect_cbAppendIfExists.checked,
+				appendtoFront : libraryHeaderSelect_cbAppendToFront.checked,
 				commonTextMap : { category:commonCategory, trackName:commonTrackName, originalArtist:commonOriginalArtist, coveredBy:commonCoveredBy },
 			}
-			const groupedPlaylists = totalList_makeGroupedPlayList(headers, option)
+			const groupedPlaylists = library_makeGroupedPlayList(headers, option)
 			if (groupedPlaylists.length) {
 				let playList = playList_new()
 				playList.trackName = 'わためぇ Night Fever'
