@@ -17,10 +17,14 @@
 		<script src="js/controls.js"></script>
 		<script src="js/export-import.js"></script>
 		<script src="js/app-init.js"></script>
+		<link rel="stylesheet" href="help/help-mode.css">
+		<script src="help/help-content.js" defer></script>
+		<script src="help/help-panel.js" defer></script>
+		<script src="help/help-mode.js" defer></script>
 	</head>
 	<body onload="init()">
 		<div style="max-width:100%;max-height:100%;display:flex;flex-direction:column;">
-			<div style="flex:none">
+			<div style="flex:none" data-help="topbar-controls">
 				<input type="button" onClick="exportList()" value="Export"/>
 				<input type="button" onClick="importList()" value="Import"/>
 				<label for="showLibrary" style="cursor:pointer"><input id="showLibrary" type="checkbox" checked="true" onClick="updateDivVisible()" style="cursor:pointer">Library</label>
@@ -40,7 +44,7 @@
 			<div style="flex-grow: 1;flex-shrink: 1;flex-basis: auto;overflow: hidden;display:flex;flex-direction:column;">
 				<div id="divLibrary" style="flex: 1 1 500px; overflow: hidden; display: none; flex-direction: column; margin-bottom: 10px;">
 					<div style="flex:none;display:flex;flex-direction:column;">
-						<div style="flex:none;display:flex">
+						<div style="flex:none;display:flex" data-help="search-bar">
 							<div style="flex:none">
 								[Library]
 							</div>
@@ -126,14 +130,14 @@
 				<div id="divPlayPath"></div>
 				<input type="range" id="videoControl" oninput="videoControl_oninput(this.value)" onchange="videoControl_onchange(this.value)" style="width:100%">
 				<div style="display:flex; flex-direction: column;padding-bottom:4px">
-					<div style="display:flex;">
+					<div style="display:flex;" data-help="playback-controls">
 						<button id="prevButton" onClick="prevButton_onClick()" style="font-size:24px;width:50px;height:50px;" title="Previous"></button>
 						<button id="playButton" onClick="playButton_onClick()" style="font-size:24px;width:50px;height:50px;"></button>
 						<button id="nextButton" onClick="nextButton_onClick()" style="font-size:24px;width:50px;height:50px;" title="Next"></button>
 						<button id="suffleButton" style="font-size:24px;width:50px;height:50px;" onclick="suffleButton_onClick()"><label id="suffleIcon" style="opacity: .4;">🔀</label></button>
 						<button id="modeButton" style="font-size:24px;width:50px;height:50px;" onclick="modeButton_onClick()"><label id="modeIcon" style="opacity: .4;">🔁</label></button>
 					</div>
-					<div style="padding-left: 4px;display: flex;">
+					<div style="padding-left: 4px;display: flex;" data-help="volume-controls">
 						<div style="display: flex;flex-direction: column;align-items: flex-end;">
 						<label>Volume</label>
 							<label for="individualVolume" style="cursor:pointer"><input id="individualVolume" type="checkbox" style="cursor:pointer" onClick="individualVolume_onClick()">Individual</label>
@@ -149,7 +153,7 @@
 							</div>
 						</div>
 					</div>
-					<div>
+					<div data-help="current-song-display">
 						<label id="currentSong" style="font-weight:bold;"></label>
 						<br>
 						<label id="currentOrder"></label>
