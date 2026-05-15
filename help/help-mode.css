@@ -100,8 +100,20 @@
 #wh-lang-toggle:hover { background: #3a5068; }
 
 #wh-tooltip-short {
-  margin-bottom: 10px;
+  margin-bottom: 4px;
   color: #ccd6e0;
+}
+
+#wh-tooltip-hidden-hint {
+  display: none;
+  margin-bottom: 8px;
+  padding: 5px 8px;
+  background: #3a2800;
+  border: 1px solid #886633;
+  border-radius: 4px;
+  color: #ffcc77;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 #wh-tooltip-footer {
@@ -236,6 +248,7 @@
 #wh-panel-body th, #wh-panel-body td {
   border: 1px solid #2c4060;
   padding: 4px 8px;
+  color: #ccd6e0;
 }
 #wh-panel-body th { background: #1e2d42; color: #88ccff; }
 

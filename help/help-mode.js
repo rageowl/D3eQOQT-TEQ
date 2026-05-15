@@ -17,6 +17,7 @@
     sections: [],        // order 순 정렬된 섹션 배열 (el 포함)
     currentContent: null, // 패널에 현재 표시 중인 데이터
     prevFocusEl: null,
+    autoOpenedCheckboxId: null, // 도움말이 자동으로 켠 체크박스 ID
   };
 
   // ── DOM 엘리먼트 ─────────────────────────────────────────────
@@ -77,6 +78,7 @@
         '<button id="wh-lang-toggle" aria-label="언어 전환">KR</button>' +
       '</div>' +
       '<div id="wh-tooltip-short"></div>' +
+      '<div id="wh-tooltip-hidden-hint"></div>' +
       '<div id="wh-tooltip-footer">' +
         '<button class="wh-btn wh-btn-detail" id="wh-btn-detail">자세히</button>' +
         '<button class="wh-btn" id="wh-btn-prev">← 이전</button>' +
@@ -115,8 +117,8 @@
       m.setAttribute('tabindex', '0');
       m.dataset.idx = idx;
 
-      m.style.top = (rect.top + window.scrollY - 4) + 'px';
-      m.style.left = (rect.left + window.scrollX - 4) + 'px';
+      m.style.top = (rect.top - 4) + 'px';
+      m.style.left = (rect.left - 4) + 'px';
 
       m.addEventListener('click', function () {
         WH.goTo(parseInt(this.dataset.idx));
@@ -230,6 +232,20 @@
       ((sec.title && sec.title[lang]) || '');
     document.getElementById('wh-tooltip-short').textContent =
       (sec.short && sec.short[lang]) || '';
+
+    // 요소가 숨겨진 패널 안에 있으면 힌트 표시
+    var hintEl = document.getElementById('wh-tooltip-hidden-hint');
+    var rect = sec.el ? sec.el.getBoundingClientRect() : null;
+    var isHidden = !rect || (rect.width === 0 && rect.height === 0);
+    if (isHidden) {
+      hintEl.textContent = lang === 'kr'
+        ? '※ 이 항목은 현재 숨겨진 패널에 있습니다. 상단 체크박스로 해당 패널을 먼저 활성화하세요.'
+        : '※ この項目は現在非表示のパネルにあります。上部のチェックボックスでパネルを先に有効にしてください。';
+      hintEl.style.display = 'block';
+    } else {
+      hintEl.style.display = 'none';
+    }
+
     document.getElementById('wh-lang-toggle').textContent =
       lang === 'kr' ? 'KR' : 'JP';
     document.getElementById('wh-step-indicator').textContent =
@@ -301,6 +317,57 @@
     updateTooltip();
   }
 
+  // ── 스크롤 핸들러 ────────────────────────────────────────────
+  function onScroll() {
+    if (!st.active) return;
+    renderMarkers();
+    positionSpotlight(st.sections[st.currentIdx].el);
+  }
+
+  // ── clientWidth 변화 감시 (스크롤바 출현/소멸 대응) ──────────
+  let _docResizeObserver = null;
+  let _lastClientWidth = 0;
+  function startDocResizeObserver() {
+    if (typeof ResizeObserver === 'undefined') return;
+    _lastClientWidth = document.documentElement.clientWidth;
+    _docResizeObserver = new ResizeObserver(function () {
+      if (!st.active) return;
+      const cw = document.documentElement.clientWidth;
+      if (cw !== _lastClientWidth) {
+        _lastClientWidth = cw;
+        renderMarkers();
+        positionSpotlight(st.sections[st.currentIdx] && st.sections[st.currentIdx].el);
+      }
+    });
+    _docResizeObserver.observe(document.documentElement);
+  }
+  function stopDocResizeObserver() {
+    if (_docResizeObserver) { _docResizeObserver.disconnect(); _docResizeObserver = null; }
+  }
+
+  // ── 패널 자동 열기/복원 ──────────────────────────────────────
+  function applyPanelForSection(sec) {
+    if (!sec || !sec.panelCheckbox) return;
+    var cb = document.getElementById(sec.panelCheckbox);
+    if (!cb || cb.checked) return; // 이미 켜져 있으면 건드리지 않음
+    cb.click();
+    st.autoOpenedCheckboxId = sec.panelCheckbox;
+    // 요소가 이제 visible해졌으므로 el 재resolve
+    try { sec.el = document.querySelector(sec.selector); } catch (e) {}
+  }
+
+  function restoreAutoPanel() {
+    if (!st.autoOpenedCheckboxId) return;
+    var cb = document.getElementById(st.autoOpenedCheckboxId);
+    if (cb && cb.checked) cb.click();
+    st.autoOpenedCheckboxId = null;
+    // el 재resolve (다시 숨겨졌으므로)
+    var sec = st.sections[st.currentIdx];
+    if (sec) {
+      try { sec.el = document.querySelector(sec.selector); } catch (e) {}
+    }
+  }
+
   // ── Public API ───────────────────────────────────────────────
 
   WH.enter = function (startIdx) {
@@ -333,11 +400,14 @@
       history.pushState(null, '', '#help');
     }
 
+    applyPanelForSection(st.sections[st.currentIdx]);
     renderMarkers();
     updateTooltip();
 
     document.addEventListener('keydown', onKeydown);
     window.addEventListener('resize', onResize);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    startDocResizeObserver();
 
     // 첫 마커로 포커스
     const firstMarker = markersEl.querySelector('.wh-marker');
@@ -347,6 +417,8 @@
   WH.exit = function () {
     if (!st.active) return;
     st.active = false;
+
+    restoreAutoPanel();
 
     if (spotlightEl) spotlightEl.style.display = 'none';
     if (markersEl) markersEl.style.display = 'none';
@@ -363,6 +435,8 @@
 
     document.removeEventListener('keydown', onKeydown);
     window.removeEventListener('resize', onResize);
+    window.removeEventListener('scroll', onScroll);
+    stopDocResizeObserver();
 
     // 포커스 복원
     if (st.prevFocusEl && typeof st.prevFocusEl.focus === 'function') {
@@ -373,7 +447,9 @@
   WH.goTo = function (idx) {
     if (!st.active) return;
     if (idx < 0 || idx >= st.sections.length) return;
+    restoreAutoPanel();
     st.currentIdx = idx;
+    applyPanelForSection(st.sections[idx]);
     updateMarkerActive();
     updateTooltip();
 
