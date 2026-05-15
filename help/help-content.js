@@ -32,7 +32,6 @@ window.HELP_CONTENT = {
 - **PlayList** 체크박스 — PlayList(재생목록) 패널 표시 여부를 전환합니다.
 - **ClipSpreadSheets** 체크박스 — Google Sheets URL 설정 패널을 표시합니다.
 - **TestClipTime** 체크박스 — 클립 구간(시작·끝) 테스트 패널을 표시합니다.
-- **Manual Video KR / JP** — 공식 사용법 동영상을 새 탭에서 엽니다.
 
 ### 이럴 때 씁니다
 - 다른 기기로 재생목록을 옮기고 싶을 때: Export → 텍스트 복사 → 새 기기에서 Import
@@ -52,7 +51,6 @@ window.HELP_CONTENT = {
 - **PlayList** チェックボックス — PlayList（再生リスト）パネルの表示を切り替えます。
 - **ClipSpreadSheets** チェックボックス — Google SheetsのURL設定パネルを表示します。
 - **TestClipTime** チェックボックス — クリップ区間（開始・終了）のテストパネルを表示します。
-- **Manual Video KR / JP** — 公式操作動画を新しいタブで開きます。
 
 ### こんな時に使います
 - 別のデバイスに再生リストを移したい時：Export → テキストをコピー → 新しいデバイスでImport
